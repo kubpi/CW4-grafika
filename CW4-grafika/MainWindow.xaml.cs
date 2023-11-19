@@ -44,8 +44,15 @@ namespace CW4_grafika
         {
             var radioButton = sender as RadioButton;
             var viewModel = DataContext as ImageViewModel;
+
             if (viewModel != null)
             {
+                // Resetuj wartości RGB i jasności do 0
+                viewModel.ColorR = 0;
+                viewModel.ColorG = 0;
+                viewModel.ColorB = 0;
+                viewModel.BrightnessLevel = 0;
+
                 if (radioButton.Name != "BrightnessButton")
                 {
                     viewModel.UpdateOperationMode(radioButton.Content.ToString());
@@ -56,6 +63,7 @@ namespace CW4_grafika
                 }
             }
         }
+
 
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
