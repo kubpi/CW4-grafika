@@ -88,6 +88,82 @@ namespace CW4_grafika
                 }
             }
         }
+
+        private float _colorR;
+        public float ColorR
+        {
+            get => _colorR;
+            set
+            {
+                if (_colorR != value)
+                {
+                    _colorR = value;
+                    OnPropertyChanged(nameof(ColorR));
+                   
+                }
+            }
+        }        
+        
+        private float _colorG;
+        public float ColorG
+        {
+            get => _colorG;
+            set
+            {
+                if (_colorG != value)
+                {
+                    _colorG = value;
+                    OnPropertyChanged(nameof(ColorG));
+                  
+                }
+            }
+        }
+        private float _colorB;
+        public float ColorB
+        {
+            get => _colorB;
+            set
+            {
+                if (_colorB != value)
+                {
+                    _colorB = value; // Błąd był tutaj, użyto _colorR zamiast _colorB
+                    OnPropertyChanged(nameof(ColorB));
+                    // Wywołanie UpdateImage() tutaj może spowodować aktualizację obrazu na bieżąco
+                }
+            }
+        }
+
+
+        public void UpdateImage()
+        {
+            // Jeśli nie ma obrazu, nie rób nic
+            if (Image == null) return;
+
+            // Pobierz aktualne operacje i wartości RGB
+            ImageOperation operation = DetermineOperation(OperationMode);
+            float rValue = ColorR; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
+            float gValue = ColorG;
+            float bValue = ColorB;
+
+            // Aplikuj operację na obrazie
+            ApplyRgbOperation(operation, rValue, gValue, bValue);
+        }
+
+        // Ta metoda musi zostać zaimplementowana w zależności od tego, jak chcesz mapować stringi na enumy
+        private ImageOperation DetermineOperation(string operationMode)
+        {
+            return operationMode switch
+            {
+                "Add" => ImageOperation.Add,
+                "Subtract" => ImageOperation.Subtract,
+                "Multiply" => ImageOperation.Multiply,
+                "Divide" => ImageOperation.Divide,
+                _ => throw new ArgumentException("Nieznany tryb operacji", nameof(operationMode)),
+            };
+        }
+
+
+
         public void UpdateOperationMode(string mode)
         {
             if (mode == "Brightness")
@@ -152,7 +228,18 @@ namespace CW4_grafika
                     result *= operationValue;
                     break;
                 case ImageOperation.Divide:
-                    result = operationValue != 0 ? result / operationValue : 0;
+                    // Sprawdzenie, czy wartość operationValue nie jest równa zero
+                    if (operationValue != 0)
+                    {
+                        result /= operationValue;
+                    }
+                    else
+                    {
+                        // Możesz tutaj zdecydować co zrobić, jeśli operationValue == 0
+                        // Na przykład, możesz zwrócić oryginalną wartość pixelValue
+                        // lub ustawić result na maksymalną wartość, jeśli dzielisz przez zero
+                        result = 255; // To może być traktowane jako "nieskończoność" w kontekście kolorów
+                    }
                     break;
             }
             return ClampColorValue((int)result);

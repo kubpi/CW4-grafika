@@ -57,6 +57,14 @@ namespace CW4_grafika
             }
         }
 
+        private void ApplyButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel != null)
+            {
+                viewModel.UpdateImage();
+            }
+        }
 
 
 
