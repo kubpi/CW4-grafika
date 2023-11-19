@@ -71,6 +71,11 @@ namespace CW4_grafika
             viewModel?.UpdateBrightness();
         }
 
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            viewModel?.SaveCurrentStateAsOriginal();
+        }
 
 
 

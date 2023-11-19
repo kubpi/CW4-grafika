@@ -62,10 +62,9 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
-    
+
             <Button Content="Wczytaj Obraz" Click="LoadImageButton_Click" />
-            <Button Content="Zastosuj" Click="ApplyButton_Click"/>
-            <Button Content="Zastosuj Jasność" Click="ApplyBrightnessButton_Click"/>
+            <Button Content="Zastosuj zmiany" Click="SaveButton_Click"/>
         </StackPanel>
         
         

@@ -99,11 +99,18 @@ namespace CW4_grafika
                 {
                     _colorR = value;
                     OnPropertyChanged(nameof(ColorR));
-                   
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
                 }
             }
-        }        
-        
+        }
+
         private float _colorG;
         public float ColorG
         {
@@ -114,7 +121,14 @@ namespace CW4_grafika
                 {
                     _colorG = value;
                     OnPropertyChanged(nameof(ColorG));
-                  
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
                 }
             }
         }
@@ -126,9 +140,16 @@ namespace CW4_grafika
             {
                 if (_colorB != value)
                 {
-                    _colorB = value; // Błąd był tutaj, użyto _colorR zamiast _colorB
+                    _colorB = value;
                     OnPropertyChanged(nameof(ColorB));
-                    // Wywołanie UpdateImage() tutaj może spowodować aktualizację obrazu na bieżąco
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
                 }
             }
         }
@@ -164,7 +185,7 @@ namespace CW4_grafika
             if (Image == null) return;
             // Tworzenie kopii oryginalnego obrazu do modyfikacji
             WriteableBitmap writableImage = _originalImage.Clone();
-        
+
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -262,7 +283,10 @@ namespace CW4_grafika
 
         public void ApplyRgbOperation(ImageOperation operation, float rValue, float gValue, float bValue)
         {
-            WriteableBitmap writableImage = new WriteableBitmap(_imageModel.Image);
+            if (_originalImage == null) return;
+
+            WriteableBitmap writableImage = _originalImage.Clone();
+
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -284,7 +308,23 @@ namespace CW4_grafika
             }
 
             writableImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
-            Image = writableImage;
+            _currentImage = writableImage;
+            Image = _currentImage;
+        }
+        public void ResetToOriginalImage()
+        {
+            if (_originalImage != null)
+            {
+                _currentImage = _originalImage.Clone();
+                Image = _currentImage;
+            }
+        }
+        public void SaveCurrentStateAsOriginal()
+        {
+            if (_currentImage != null)
+            {
+                _originalImage = _currentImage.Clone();
+            }
         }
 
         private byte ApplyOperation(byte pixelValue, float operationValue, ImageOperation operation)
