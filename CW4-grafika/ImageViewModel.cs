@@ -133,6 +133,78 @@ namespace CW4_grafika
             }
         }
 
+        private float _brightnessLevel;
+        public float BrightnessLevel
+        {
+            get => _brightnessLevel;
+            set
+            {
+                if (_brightnessLevel != value)
+                {
+                    _brightnessLevel = value;
+                    OnPropertyChanged(nameof(BrightnessLevel));
+
+                    if (_brightnessLevel == 0)
+                    {
+                        ResetBrightness();
+                    }
+                    else
+                    {
+                        UpdateBrightness();
+                    }
+                }
+            }
+        }
+
+        private WriteableBitmap _originalImage;
+        private WriteableBitmap _currentImage;
+
+        public void UpdateBrightness()
+        {
+            if (Image == null) return;
+            // Tworzenie kopii oryginalnego obrazu do modyfikacji
+            WriteableBitmap writableImage = _originalImage.Clone();
+        
+
+            int width = writableImage.PixelWidth;
+            int height = writableImage.PixelHeight;
+            int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8);
+
+            byte[] pixels = new byte[height * stride];
+            writableImage.CopyPixels(pixels, stride, 0);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int index = y * stride + x * 4;
+                    for (int color = 0; color < 3; color++) // Przejdź przez R, G i B
+                    {
+                        // Wczytaj obecny kolor
+                        int colorValue = pixels[index + color];
+                        // Dodaj poziom jasności, nie przekraczając zakresu 0-255
+                        colorValue = ClampColorValue(colorValue + (int)_brightnessLevel);
+                        pixels[index + color] = (byte)colorValue;
+                    }
+                    // Alpha channel (index + 3) pozostaje bez zmian
+                }
+            }
+
+            writableImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
+            // Zapisz zmodyfikowany obraz jako aktualny
+            _currentImage = writableImage;
+
+            // Uaktualnij obraz w modelu
+            Image = _currentImage;
+        }
+        public void ResetBrightness()
+        {
+            if (_originalImage != null)
+            {
+                _currentImage = _originalImage.Clone();
+                Image = _currentImage;
+            }
+        }
 
         public void UpdateImage()
         {
@@ -182,9 +254,11 @@ namespace CW4_grafika
         public void LoadImage(string path)
         {
             var bitmapImage = new BitmapImage(new Uri(path));
-            var writeableBitmap = new WriteableBitmap(bitmapImage);
-            Image = writeableBitmap;
+            _originalImage = new WriteableBitmap(bitmapImage);
+            Image = _originalImage;
+            _currentImage = _originalImage.Clone();
         }
+
 
         public void ApplyRgbOperation(ImageOperation operation, float rValue, float gValue, float bValue)
         {

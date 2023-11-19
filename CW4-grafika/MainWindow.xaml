@@ -56,14 +56,16 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1" Visibility="{Binding IsBrightnessSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="Brightness" VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
             <StackPanel Orientation="Vertical" Margin="0 0 10 0">
-                <TextBox  Width="50" Margin="0 0 0 5" FontSize="14"/>
-                <Slider Minimum="0" Maximum="255"  Width="100" TickFrequency="5"/>
+                <TextBox Text="{Binding BrightnessLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="0 0 0 5" FontSize="14"/>
+                <Slider Minimum="-100" Maximum="100" Value="{Binding BrightnessLevel, Mode=TwoWay}" Width="100" TickFrequency="1"/>
+
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
     
             <Button Content="Wczytaj Obraz" Click="LoadImageButton_Click" />
             <Button Content="Zastosuj" Click="ApplyButton_Click"/>
+            <Button Content="Zastosuj Jasność" Click="ApplyBrightnessButton_Click"/>
         </StackPanel>
         
         
