@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CW4-grafika")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+76d77403969cf2eaff0f2572b942ab6600a73e26")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f10b8fbee3eed009fa705ebfa53daf81d7841305")]
 [assembly: System.Reflection.AssemblyProductAttribute("CW4-grafika")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CW4-grafika")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
