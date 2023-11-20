@@ -79,7 +79,8 @@
             <Button Content="Resetuj skalę szarości" Click="ResetGrayScaleButton_Click" Margin="10,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1" Visibility="{Binding IsFiltersSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
-            <ComboBox Name="FiltersComboBox" SelectedIndex="0">
+            <ComboBox Name="FiltersComboBox" SelectedIndex="0" SelectionChanged="FiltersComboBox_SelectionChanged">
+                <ComboBoxItem Content="Brak filtru"/>
                 <ComboBoxItem Content="Filtr wygładzający (uśredniający)"/>
                 <ComboBoxItem Content="Filtr medianowy"/>
                 <ComboBoxItem Content="Filtr Sobela (wykrywanie krawędzi)"/>
@@ -87,8 +88,8 @@
                 <ComboBoxItem Content="Filtr rozmycie gaussowskie"/>
                 <ComboBoxItem Content="Splot maski dowolnego rozmiaru i dowolnych wartości elementów maski"/>
             </ComboBox>
-            <Button Content="Zastosuj filtr" Click="ApplyFilterButton_Click"/>
-            <Button Content="Wyłącz filtr" Click="DisableFilterButton_Click" Margin="10,0"/>
+            <Button Content="Zastosuj filtr" />
+            <Button Content="Wyłącz filtr"  Margin="10,0"/>
         </StackPanel>
 
 

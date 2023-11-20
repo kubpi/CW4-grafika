@@ -452,9 +452,11 @@ namespace CW4_grafika
 
         public void ApplySmoothingFilter()
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
+
+
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -505,9 +507,9 @@ namespace CW4_grafika
         }
         public void ApplyMedianFilter()
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -565,9 +567,9 @@ namespace CW4_grafika
         }
         public void ApplySobelFilter()
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -634,9 +636,9 @@ namespace CW4_grafika
         }
         public void ApplySharpeningFilter()
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -690,9 +692,9 @@ namespace CW4_grafika
         }
         public void ApplyGaussianBlur()
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -756,21 +758,24 @@ namespace CW4_grafika
             switch (filterIndex)
             {
                 case 0:
-                    ApplySmoothingFilter();
+                    ResetToOriginalImage();
                     break;
                 case 1:
-                    ApplyMedianFilter();
+                    ApplySmoothingFilter();
                     break;
                 case 2:
-                    ApplySobelFilter();
+                    ApplyMedianFilter();
                     break;
                 case 3:
-                    ApplySharpeningFilter();
+                    ApplySobelFilter();
                     break;
                 case 4:
-                    ApplyGaussianBlur();
+                    ApplySharpeningFilter();
                     break;
                 case 5:
+                    ApplyGaussianBlur();
+                    break;
+                case 6:
                     // Tutaj możesz dodać logikę dla splotu maski dowolnego rozmiaru
                     break;
                 default:

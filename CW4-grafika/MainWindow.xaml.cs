@@ -150,5 +150,18 @@ namespace CW4_grafika
             var viewModel = DataContext as ImageViewModel;
             viewModel?.ResetToOriginalImage();
         }
+
+        private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel == null) return;
+
+            var comboBox = sender as ComboBox;
+            var selectedFilter = comboBox.SelectedIndex;
+
+            viewModel.ApplyFilter(selectedFilter);
+        }
+
+
     }
 }
