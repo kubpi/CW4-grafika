@@ -54,17 +54,25 @@ namespace CW4_grafika
                 viewModel.ColorB = 0;
                 viewModel.BrightnessLevel = 0;
 
+                
                 // Sprawdź, czy wybrano GrayButton
                 if (radioButton.Name == "GrayButton")
                 {
                     viewModel.IsGrayScaleSelected = true;
                     viewModel.IsOperationSelected = false; // Jeśli to potrzebne
                     viewModel.IsBrightnessSelected = false; // Jeśli to potrzebne
+                    viewModel.IsFiltersSelected = false;
+                }else if (radioButton.Name == "FiltersButton")
+                {
+                    viewModel.IsFiltersSelected = true;
+                    viewModel.IsGrayScaleSelected = false;
+                    viewModel.IsBrightnessSelected = false;
+                    viewModel.IsOperationSelected = false;
                 }
                 else
                 {
                     viewModel.IsGrayScaleSelected = false; // Ukryj panel skali szarości dla innych przycisków
-
+                    viewModel.IsFiltersSelected = false;
                     if (radioButton.Name != "BrightnessButton")
                     {
                         viewModel.UpdateOperationMode(radioButton.Content.ToString());
@@ -129,6 +137,18 @@ namespace CW4_grafika
             }
         }
 
+        private void ApplyFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            var selectedFilter = FiltersComboBox.SelectedIndex;
 
+            viewModel?.ApplyFilter(selectedFilter);
+        }
+
+        private void DisableFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            viewModel?.ResetToOriginalImage();
+        }
     }
 }
