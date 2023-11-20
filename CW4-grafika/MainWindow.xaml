@@ -77,8 +77,8 @@
                 <ComboBoxItem Content="Minimalna wartość RGB"/>
             </ComboBox>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1" Visibility="{Binding IsFiltersSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
-            <ComboBox Name="FiltersComboBox" SelectedIndex="0" SelectionChanged="FiltersComboBox_SelectionChanged">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsFiltersSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <ComboBox Name="FiltersComboBox" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" SelectionChanged="FiltersComboBox_SelectionChanged">
                 <ComboBoxItem Content="Brak filtru"/>
                 <ComboBoxItem Content="Filtr wygładzający (uśredniający)"/>
                 <ComboBoxItem Content="Filtr medianowy"/>
@@ -88,16 +88,22 @@
                 <ComboBoxItem Content="Splot maski dowolnego rozmiaru i dowolnych wartości elementów maski"/>
             </ComboBox>
         </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsConvolutionFilterSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="Wprowadź rozmiar maski:"/>
+            <TextBox Name="MaskSizeTextBox" Text="3"/>
+            <Button Content="Utwórz maskę" Click="CreateMaskButton_Click"/>
+            <ItemsControl Name="MaskGrid" />
+            <Button Content="Zastosuj splot" Click="ApplyConvolutionButton_Click"/>
+        </StackPanel>
 
 
-
-        <StackPanel Orientation="Horizontal" Grid.Row="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
 
             <Button Content="Wczytaj Obraz" Click="LoadImageButton_Click" />
             <Button Content="Zastosuj zmiany" Click="SaveButton_Click"/>
         </StackPanel>
         
         
-        <Image Source="{Binding Image}" Grid.Row="3" />
+        <Image Source="{Binding Image}" Grid.Row="4" />
     </Grid>
 </Window>

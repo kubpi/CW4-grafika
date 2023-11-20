@@ -127,6 +127,23 @@ namespace CW4_grafika
             }
         }
 
+        private int _selectedFilterIndex;
+        public int SelectedFilterIndex
+        {
+            get => _selectedFilterIndex;
+            set
+            {
+                if (_selectedFilterIndex != value)
+                {
+                    _selectedFilterIndex = value;
+                    OnPropertyChanged(nameof(SelectedFilterIndex));
+                    OnPropertyChanged(nameof(IsConvolutionFilterSelected));
+                }
+            }
+        }
+
+        public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6; // 6 to indeks 
+        
         private float _colorR;
         public float ColorR
         {
@@ -752,6 +769,60 @@ namespace CW4_grafika
         {
             return (byte)Math.Max(Math.Min(value, 255), 0);
         }
+        public void ApplyConvolutionFilter(double[,] mask)
+        {
+            if (Image == null) return;
+
+            WriteableBitmap writableImage = _currentImage.Clone();
+
+            int width = writableImage.PixelWidth;
+            int height = writableImage.PixelHeight;
+            int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8);
+
+            byte[] pixels = new byte[height * stride];
+            byte[] newPixels = new byte[height * stride];
+            writableImage.CopyPixels(pixels, stride, 0);
+
+            int maskSize = mask.GetLength(0);
+            int margin = maskSize / 2;
+
+            for (int y = margin; y < height - margin; y++)
+            {
+                for (int x = margin; x < width - margin; x++)
+                {
+                    double pixelR = 0, pixelG = 0, pixelB = 0;
+
+                    for (int filterY = 0; filterY < maskSize; filterY++)
+                    {
+                        for (int filterX = 0; filterX < maskSize; filterX++)
+                        {
+                            int imageX = (x - margin) + filterX;
+                            int imageY = (y - margin) + filterY;
+                            double filterValue = mask[filterY, filterX];
+
+                            pixelB += filterValue * pixels[imageY * stride + imageX * 4];
+                            pixelG += filterValue * pixels[imageY * stride + imageX * 4 + 1];
+                            pixelR += filterValue * pixels[imageY * stride + imageX * 4 + 2];
+                        }
+                    }
+
+                    int index = y * stride + x * 4;
+                    newPixels[index] = (byte)ClampColorValue1(pixelB);
+                    newPixels[index + 1] = (byte)ClampColorValue1(pixelG);
+                    newPixels[index + 2] = (byte)ClampColorValue1(pixelR);
+                    newPixels[index + 3] = 255; // Alpha wartość niezmieniona
+                }
+            }
+
+            writableImage.WritePixels(new Int32Rect(0, 0, width, height), newPixels, stride, 0);
+            _currentImage = writableImage;
+            Image = _currentImage;
+        }
+
+        double[,] sharpenMask = { { -1, -1, -1 },
+                          { -1,  9, -1 },
+                          { -1, -1, -1 } };
+       
 
         public void ApplyFilter(int filterIndex)
         {
@@ -776,7 +847,7 @@ namespace CW4_grafika
                     ApplyGaussianBlur();
                     break;
                 case 6:
-                    // Tutaj możesz dodać logikę dla splotu maski dowolnego rozmiaru
+                    //ApplyConvolutionFilter(sharpenMask);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznany filtr");

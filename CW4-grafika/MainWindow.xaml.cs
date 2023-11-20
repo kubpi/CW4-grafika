@@ -22,6 +22,8 @@ namespace CW4_grafika
     /// </summary>
     public partial class MainWindow : Window
     {
+        private int maskSize;
+        private TextBox[,] maskTextBoxes;
         public MainWindow()
         {
             InitializeComponent();
@@ -106,17 +108,15 @@ namespace CW4_grafika
             var viewModel = DataContext as ImageViewModel;
             viewModel?.SaveCurrentStateAsOriginal();
         }
-     
+
         private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = DataContext as ImageViewModel;
             if (viewModel == null) return;
 
-            var comboBox = sender as ComboBox;
-            var selectedFilter = comboBox.SelectedIndex;
-
-            viewModel.ApplyFilter(selectedFilter);
+            viewModel.ApplyFilter(viewModel.SelectedFilterIndex);
         }
+
 
         private void GrayScaleMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -154,5 +154,48 @@ namespace CW4_grafika
             }
         }
 
+        private void CreateMaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!int.TryParse(MaskSizeTextBox.Text, out maskSize) || maskSize <= 0)
+            {
+                MessageBox.Show("Rozmiar maski musi być dodatnią liczbą całkowitą.");
+                return;
+            }
+
+            maskTextBoxes = new TextBox[maskSize, maskSize];
+            MaskGrid.Items.Clear();
+            for (int i = 0; i < maskSize; i++)
+            {
+                var rowPanel = new StackPanel { Orientation = Orientation.Horizontal };
+                for (int j = 0; j < maskSize; j++)
+                {
+                    var textBox = new TextBox { Width = 40, Margin = new Thickness(2) };
+                    maskTextBoxes[i, j] = textBox;
+                    rowPanel.Children.Add(textBox);
+                }
+                MaskGrid.Items.Add(rowPanel);
+            }
+        }
+
+        private void ApplyConvolutionButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mask = new double[maskSize, maskSize];
+            for (int i = 0; i < maskSize; i++)
+            {
+                for (int j = 0; j < maskSize; j++)
+                {
+                    if (!double.TryParse(maskTextBoxes[i, j].Text, out double value))
+                    {
+                        MessageBox.Show($"Nieprawidłowa wartość w masce: wiersz {i + 1}, kolumna {j + 1}");
+                        return;
+                    }
+                    mask[i, j] = value;
+                }
+            }
+
+            // Przykład wywołania metody z ImageViewModel z podaną maską
+            var viewModel = DataContext as ImageViewModel;
+            viewModel?.ApplyConvolutionFilter(mask);
+        }
     }
 }
