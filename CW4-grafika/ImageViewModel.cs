@@ -143,7 +143,28 @@ namespace CW4_grafika
         }
 
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6; // 6 to indeks 
-        
+
+        public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
+
+        private bool _isImageLoaded;
+
+        public bool IsImageLoaded
+        {
+            get => _isImageLoaded;
+            set
+            {
+                if (_isImageLoaded != value)
+                {
+                    _isImageLoaded = value;
+                    OnPropertyChanged(nameof(IsImageLoaded));
+                    OnPropertyChanged(nameof(CanApplyOperations));
+                    OnPropertyChanged(nameof(ImagePlaceholderText)); // dodaj to
+                }
+            }
+        }
+
+        public bool CanApplyOperations => _isImageLoaded;
+
         private float _colorR;
         public float ColorR
         {
@@ -333,6 +354,7 @@ namespace CW4_grafika
             _originalImage = new WriteableBitmap(bitmapImage);
             Image = _originalImage;
             _currentImage = _originalImage.Clone();
+            IsImageLoaded = true; // Ustawienie flagi po wczytaniu obrazu
         }
 
 
@@ -771,9 +793,9 @@ namespace CW4_grafika
         }
         public void ApplyConvolutionFilter(double[,] mask)
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = _currentImage.Clone();
+            WriteableBitmap writableImage = _originalImage.Clone();
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -847,7 +869,7 @@ namespace CW4_grafika
                     ApplyGaussianBlur();
                     break;
                 case 6:
-                    //ApplyConvolutionFilter(sharpenMask);
+                    ResetToOriginalImage();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznany filtr");
