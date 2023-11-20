@@ -106,51 +106,7 @@ namespace CW4_grafika
             var viewModel = DataContext as ImageViewModel;
             viewModel?.SaveCurrentStateAsOriginal();
         }
-
-
-        private void ConvertToGrayScaleButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            var selectedMethod = GrayScaleMethodComboBox.SelectedIndex;
-
-            ImageOperation operation = selectedMethod switch
-            {
-                0 => ImageOperation.GrayScaleAverage,
-                1 => ImageOperation.GrayScaleRed,
-                2 => ImageOperation.GrayScaleGreen,
-                3 => ImageOperation.GrayScaleBlue,
-                4 => ImageOperation.GrayScaleMax,
-                5 => ImageOperation.GrayScaleMin,
-                _ => throw new InvalidOperationException("Nieznany wybór metody skali szarości"),
-            };
-
-            viewModel?.ConvertToGrayScale(operation);
-        }
-
-        // Metoda obsługująca kliknięcie przycisku resetującego skalę szarości
-        private void ResetGrayScaleButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            if (viewModel != null)
-            {
-                viewModel.ResetToOriginalImage();
-            }
-        }
-
-        private void ApplyFilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            var selectedFilter = FiltersComboBox.SelectedIndex;
-
-            viewModel?.ApplyFilter(selectedFilter);
-        }
-
-        private void DisableFilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            viewModel?.ResetToOriginalImage();
-        }
-
+     
         private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = DataContext as ImageViewModel;
@@ -162,6 +118,41 @@ namespace CW4_grafika
             viewModel.ApplyFilter(selectedFilter);
         }
 
+        private void GrayScaleMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel == null) return;
+
+            var comboBox = sender as ComboBox;
+            var selectedMethod = comboBox.SelectedIndex;
+
+            switch (selectedMethod)
+            {
+                case 0: // Brak skali szarości
+                    viewModel.ResetToOriginalImage();
+                    break;
+                case 1: // Średnia RGB
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleAverage);
+                    break;
+                case 2:
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleRed);
+                    break;
+                case 3:
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleGreen);
+                    break;
+                case 4:
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleBlue);
+                    break;
+                case 5:
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleMax);
+                    break;
+                case 6:
+                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleMin);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Nieznana metoda skali szarości");
+            }
+        }
 
     }
 }

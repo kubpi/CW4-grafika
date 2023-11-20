@@ -404,9 +404,9 @@ namespace CW4_grafika
 
         public void ConvertToGrayScale(ImageOperation grayScaleType)
         {
-            if (Image == null) return;
+            if (_originalImage == null) return;
 
-            WriteableBitmap writableImage = new WriteableBitmap(_imageModel.Image);
+            WriteableBitmap writableImage = _originalImage.Clone();
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
             int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8);
