@@ -30,8 +30,15 @@ namespace CW4_grafika
             Add,
             Subtract,
             Multiply,
-            Divide
+            Divide,
+            GrayScaleAverage,
+            GrayScaleRed,
+            GrayScaleGreen,
+            GrayScaleBlue,
+            GrayScaleMax,
+            GrayScaleMin
         }
+
         private string _selectedOperation;
         public string SelectedOperation
         {
@@ -72,9 +79,26 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(IsBrightnessSelected));
                     // Ustawienie przeciwnej wartości dla IsOperationSelected
                     IsOperationSelected = !value;
+                    IsGrayScaleSelected = !value;
                 }
             }
         }
+
+        private bool _isGrayScaleSelected;
+        public bool IsGrayScaleSelected
+        {
+            get => _isGrayScaleSelected;
+            set
+            {
+                if (_isGrayScaleSelected != value)
+                {
+                    _isGrayScaleSelected = value;
+                    OnPropertyChanged(nameof(IsGrayScaleSelected));
+                }
+            }
+        }
+
+
         private bool _isOperationSelected;
         public bool IsOperationSelected
         {
@@ -363,6 +387,49 @@ namespace CW4_grafika
         {
             return (byte)Math.Min(Math.Max(value, 0), 255);
         }
+
+        public void ConvertToGrayScale(ImageOperation grayScaleType)
+        {
+            if (Image == null) return;
+
+            WriteableBitmap writableImage = new WriteableBitmap(_imageModel.Image);
+            int width = writableImage.PixelWidth;
+            int height = writableImage.PixelHeight;
+            int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8);
+            byte[] pixels = new byte[height * stride];
+            writableImage.CopyPixels(pixels, stride, 0);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int index = y * stride + x * 4;
+                    byte red = pixels[index + 2];
+                    byte green = pixels[index + 1];
+                    byte blue = pixels[index + 0];
+
+                    byte gray = grayScaleType switch
+                    {
+                        ImageOperation.GrayScaleAverage => (byte)((red + green + blue) / 3),
+                        ImageOperation.GrayScaleRed => red,
+                        ImageOperation.GrayScaleGreen => green,
+                        ImageOperation.GrayScaleBlue => blue,
+                        ImageOperation.GrayScaleMax => Math.Max(red, Math.Max(green, blue)),
+                        ImageOperation.GrayScaleMin => Math.Min(red, Math.Min(green, blue)),
+                        _ => throw new ArgumentException("Nieznany typ skali szarości", nameof(grayScaleType)),
+                    };
+
+                    pixels[index + 0] = gray;
+                    pixels[index + 1] = gray;
+                    pixels[index + 2] = gray;
+                }
+            }
+
+            writableImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
+            _currentImage = writableImage;
+            Image = _currentImage;
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
