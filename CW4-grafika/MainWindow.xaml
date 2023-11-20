@@ -24,6 +24,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="WhiteSmoke"></Border>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <RadioButton Name="AddButton" Content="Add" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PBM" Background="White"  Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
 
@@ -40,7 +41,7 @@
             <RadioButton Name="FiltersButton" Content="Filters" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
        
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsOperationSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20 0 0 10" Grid.Row="1" Visibility="{Binding IsOperationSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="{Binding OperationMode}" VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
             <StackPanel Orientation="Vertical" Margin="0 0 10 0">
                 <Label Content="R" Width="50" Margin="0 0 0 5" FontSize="14" HorizontalContentAlignment="Center"/>
@@ -59,7 +60,7 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1" Visibility="{Binding IsBrightnessSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Text="Brightness" VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
+            <TextBlock Text="Brightness" VerticalAlignment="Center" Margin="20 0 20 0" FontSize="15"/>
             <StackPanel Orientation="Vertical" Margin="0 0 10 0">
                 <TextBox Text="{Binding BrightnessLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="0 0 0 5" FontSize="14"/>
                 <Slider Minimum="-100" Maximum="100" Value="{Binding BrightnessLevel, Mode=TwoWay}" Width="100" TickFrequency="1"/>
@@ -67,7 +68,7 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1" Visibility="{Binding IsGrayScaleSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <ComboBox Name="GrayScaleMethodComboBox" SelectedIndex="0" SelectionChanged="GrayScaleMethodComboBox_SelectionChanged">
+            <ComboBox Name="GrayScaleMethodComboBox" SelectedIndex="0" SelectionChanged="GrayScaleMethodComboBox_SelectionChanged" Margin="20 0 0 0">
                 <ComboBoxItem Content="Brak"/>
                 <ComboBoxItem Content="Średnia RGB"/>
                 <ComboBoxItem Content="Kanał Czerwony"/>
@@ -78,7 +79,7 @@
             </ComboBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsFiltersSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
-            <ComboBox Name="FiltersComboBox" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" SelectionChanged="FiltersComboBox_SelectionChanged">
+            <ComboBox Name="FiltersComboBox" SelectedIndex="{Binding SelectedFilterIndex, Mode=TwoWay}" SelectionChanged="FiltersComboBox_SelectionChanged" Margin="20 0 0 0">
                 <ComboBoxItem Content="Brak filtru"/>
                 <ComboBoxItem Content="Filtr wygładzający (uśredniający)"/>
                 <ComboBoxItem Content="Filtr medianowy"/>
@@ -88,19 +89,19 @@
                 <ComboBoxItem Content="Splot maski dowolnego rozmiaru i dowolnych wartości elementów maski"/>
             </ComboBox>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsConvolutionFilterSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Text="Wprowadź rozmiar maski:"/>
-            <TextBox Name="MaskSizeTextBox" Text="3"/>
-            <Button Content="Utwórz maskę" Click="CreateMaskButton_Click"/>
-            <ItemsControl Name="MaskGrid" />
-            <Button Content="Zastosuj splot" Click="ApplyConvolutionButton_Click"/>
+        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsConvolutionFilterSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
+            <TextBlock Text="Wprowadź rozmiar maski:" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBox Name="MaskSizeTextBox" Text="3" FontSize="15" Margin="10" Width="140"/>
+            <Button Content="Utwórz maskę" Click="CreateMaskButton_Click" Padding="5" FontSize="15" Margin="10" Width="140"/>
+            <ItemsControl Name="MaskGrid" HorizontalAlignment="Center"/>
+            <Button Content="Zastosuj splot" Click="ApplyConvolutionButton_Click" Padding="5" FontSize="15" Margin="10" Width="140"/>
         </StackPanel>
 
 
-        <StackPanel Orientation="Horizontal" Grid.Row="3">
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0 20 0 0">
 
-            <Button Content="Wczytaj Obraz" Click="LoadImageButton_Click" />
-            <Button Content="Zastosuj zmiany" Click="SaveButton_Click" IsEnabled="{Binding CanApplyOperations}"/>
+            <Button Content="Wczytaj Obraz" Click="LoadImageButton_Click" FontSize="15" Margin="20 0 20 0" Padding="10 5 10 5"/>
+            <Button Content="Zastosuj zmiany" Click="SaveButton_Click" IsEnabled="{Binding CanApplyOperations}" FontSize="15" Padding="10 5 10 5"/>
         </StackPanel>
 
 
