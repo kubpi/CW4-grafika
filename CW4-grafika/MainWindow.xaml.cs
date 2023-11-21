@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using static CW4_grafika.ImageOperation;
 
 namespace CW4_grafika
 {
@@ -106,22 +107,22 @@ namespace CW4_grafika
                     viewModel.ResetToOriginalImage();
                     break;
                 case 1: // Średnia RGB
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleAverage);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleAverage);
                     break;
                 case 2:
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleRed);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleRed);
                     break;
                 case 3:
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleGreen);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleGreen);
                     break;
                 case 4:
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleBlue);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleBlue);
                     break;
                 case 5:
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleMax);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleMax);
                     break;
                 case 6:
-                    viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleMin);
+                    viewModel.ConvertToGrayScale(ImageOperation.GrayScaleMin);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznana metoda skali szarości");

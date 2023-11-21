@@ -1,10 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+
 
 namespace CW4_grafika
 {
@@ -223,19 +222,7 @@ namespace CW4_grafika
                 }
             }
         }
-        public enum ImageOperation
-        {
-            Add,
-            Subtract,
-            Multiply,
-            Divide,
-            GrayScaleAverage,
-            GrayScaleRed,
-            GrayScaleGreen,
-            GrayScaleBlue,
-            GrayScaleMax,
-            GrayScaleMin
-        }
+        
         public ICommand LoadImageCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }            
         public ImageViewModel()
@@ -273,7 +260,7 @@ namespace CW4_grafika
         }   
         public void UpdateBrightness()
         {
-            Image = _pointTransformations.UpdateBrightness(_originalImage, Image, _brightnessLevel);
+            Image = _pointTransformations.UpdateBrightness(_originalImage, _brightnessLevel);
         }
         public void ResetBrightness()
         {

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using static CW4_grafika.ImageViewModel;
+
 
 namespace CW4_grafika
 {
@@ -82,9 +78,9 @@ namespace CW4_grafika
             }
             return ClampColorValue((int)result);
         }
-        public WriteableBitmap UpdateBrightness(WriteableBitmap _originalImage, WriteableBitmap Image, float _brightnessLevel)
+        public WriteableBitmap UpdateBrightness(WriteableBitmap _originalImage, float _brightnessLevel)
         {
-            if (Image == null) return null;
+            if (_originalImage == null) return null;
             // Tworzenie kopii oryginalnego obrazu do modyfikacji
             WriteableBitmap writableImage = _originalImage.Clone();
 
