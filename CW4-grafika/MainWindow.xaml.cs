@@ -1,19 +1,6 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static CW4_grafika.ImageViewModel;
 
 namespace CW4_grafika
 {
@@ -29,20 +16,6 @@ namespace CW4_grafika
             InitializeComponent();
             this.DataContext = new ImageViewModel();
         }
-
-       /* private void LoadImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                var viewModel = DataContext as ImageViewModel;
-                if (viewModel != null)
-                {
-                    viewModel.LoadImage(openFileDialog.FileName);
-                }
-            }
-        }*/
         private void OperationRadioButton_Click(object sender, RoutedEventArgs e)
         {
             var radioButton = sender as RadioButton;
@@ -61,8 +34,8 @@ namespace CW4_grafika
                 if (radioButton.Name == "GrayButton")
                 {
                     viewModel.IsGrayScaleSelected = true;
-                    viewModel.IsOperationSelected = false; // Jeśli to potrzebne
-                    viewModel.IsBrightnessSelected = false; // Jeśli to potrzebne
+                    viewModel.IsOperationSelected = false;
+                    viewModel.IsBrightnessSelected = false;
                     viewModel.IsFiltersSelected = false;
                 }else if (radioButton.Name == "FiltersButton")
                 {
@@ -86,37 +59,38 @@ namespace CW4_grafika
                 }
             }
         }
-
-
-
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            if (viewModel != null)
-            {
-                viewModel.UpdateImage();
-            }
-        }
-        private void ApplyBrightnessButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            viewModel?.UpdateBrightness();
-        }
-
-/*        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = DataContext as ImageViewModel;
-            viewModel?.SaveCurrentStateAsOriginal();
-        }*/
-
+             
         private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = DataContext as ImageViewModel;
             if (viewModel == null) return;
-
-            viewModel.ApplyFilter(viewModel.SelectedFilterIndex);
+            switch (viewModel.SelectedFilterIndex)
+            {
+                case 0:
+                    viewModel.ResetToOriginalImage();
+                    break;
+                case 1:
+                    viewModel.ApplySmoothingFilter();
+                    break;
+                case 2:
+                    viewModel.ApplyMedianFilter();
+                    break;
+                case 3:
+                    viewModel.ApplySobelFilter();
+                    break;
+                case 4:
+                    viewModel.ApplySharpeningFilter();
+                    break;
+                case 5:
+                    viewModel.ApplyGaussianBlur();
+                    break;
+                case 6:
+                    viewModel.ResetToOriginalImage();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Nieznany filtr");
+            }
         }
-
 
         private void GrayScaleMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

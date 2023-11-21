@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -14,6 +11,18 @@ namespace CW4_grafika
     public class ImageViewModel : INotifyPropertyChanged
     {
         private ImageModel _imageModel;
+        private WriteableBitmap _originalImage;
+        private WriteableBitmap _currentImage;
+        private bool _isImageLoaded;
+        private string _selectedOperation;
+        private string _operationMode;
+        private float _colorR, _colorG, _colorB;
+        private float _brightnessLevel;
+        private int _selectedFilterIndex;
+        private bool _isBrightnessSelected;
+        private bool _isGrayScaleSelected;
+        private bool _isOperationSelected;
+        private bool _isFiltersSelected;
         public WriteableBitmap Image
         {
             get { return _imageModel.Image; }
@@ -23,56 +32,20 @@ namespace CW4_grafika
                 OnPropertyChanged(nameof(Image));
             }
         }
-
-        public ICommand LoadImageCommand { get; private set; }
-        public ICommand SaveCommand { get; private set; }
-        public ICommand ApplyConvolutionCommand { get; private set; }
-        private bool CanExecuteLoadImage(object parameter)
+        public bool IsImageLoaded
         {
-            return true; // Można dodać warunki, kiedy polecenie może być wykonane
-        }
-
-        private void ExecuteLoadImage(object parameter)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
-            if (openFileDialog.ShowDialog() == true)
+            get => _isImageLoaded;
+            set
             {
-                LoadImage(openFileDialog.FileName);
+                if (_isImageLoaded != value)
+                {
+                    _isImageLoaded = value;
+                    OnPropertyChanged(nameof(IsImageLoaded));
+                    OnPropertyChanged(nameof(CanApplyOperations));
+                    OnPropertyChanged(nameof(ImagePlaceholderText)); // dodaj to
+                }
             }
         }
-
-        private bool CanExecuteSave(object parameter)
-        {
-            return _currentImage != null; // Zapis możliwy, gdy obraz został wczytany
-        }
-
-        private void ExecuteSave(object parameter)
-        {
-            SaveCurrentStateAsOriginal();
-        }
-        
-        public ImageViewModel()
-        {
-            _imageModel = new ImageModel();
-            LoadImageCommand = new RelayCommand(ExecuteLoadImage, CanExecuteLoadImage);
-            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
-        }
-        public enum ImageOperation
-        {
-            Add,
-            Subtract,
-            Multiply,
-            Divide,
-            GrayScaleAverage,
-            GrayScaleRed,
-            GrayScaleGreen,
-            GrayScaleBlue,
-            GrayScaleMax,
-            GrayScaleMin
-        }
-
-        private string _selectedOperation;
         public string SelectedOperation
         {
             get => _selectedOperation;
@@ -86,8 +59,6 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private string _operationMode;
         public string OperationMode
         {
             get => _operationMode;
@@ -100,8 +71,6 @@ namespace CW4_grafika
                 }
             }
         }
-        
-        private bool _isBrightnessSelected;
         public bool IsBrightnessSelected
         {
             get => _isBrightnessSelected;
@@ -118,8 +87,6 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private bool _isGrayScaleSelected;
         public bool IsGrayScaleSelected
         {
             get => _isGrayScaleSelected;
@@ -132,8 +99,6 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private bool _isOperationSelected;
         public bool IsOperationSelected
         {
             get => _isOperationSelected;
@@ -146,8 +111,6 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private bool _isFiltersSelected;
         public bool IsFiltersSelected
         {
             get => _isFiltersSelected;
@@ -160,8 +123,6 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private int _selectedFilterIndex;
         public int SelectedFilterIndex
         {
             get => _selectedFilterIndex;
@@ -175,96 +136,9 @@ namespace CW4_grafika
                 }
             }
         }
-
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6; // 6 to indeks 
-
         public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
-
-        private bool _isImageLoaded;
-
-        public bool IsImageLoaded
-        {
-            get => _isImageLoaded;
-            set
-            {
-                if (_isImageLoaded != value)
-                {
-                    _isImageLoaded = value;
-                    OnPropertyChanged(nameof(IsImageLoaded));
-                    OnPropertyChanged(nameof(CanApplyOperations));
-                    OnPropertyChanged(nameof(ImagePlaceholderText)); // dodaj to
-                }
-            }
-        }
-
         public bool CanApplyOperations => _isImageLoaded;
-
-        private float _colorR;
-        public float ColorR
-        {
-            get => _colorR;
-            set
-            {
-                if (_colorR != value)
-                {
-                    _colorR = value;
-                    OnPropertyChanged(nameof(ColorR));
-                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
-                    {
-                        ResetToOriginalImage();
-                    }
-                    else
-                    {
-                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
-                    }
-                }
-            }
-        }
-
-        private float _colorG;
-        public float ColorG
-        {
-            get => _colorG;
-            set
-            {
-                if (_colorG != value)
-                {
-                    _colorG = value;
-                    OnPropertyChanged(nameof(ColorG));
-                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
-                    {
-                        ResetToOriginalImage();
-                    }
-                    else
-                    {
-                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
-                    }
-                }
-            }
-        }
-        private float _colorB;
-        public float ColorB
-        {
-            get => _colorB;
-            set
-            {
-                if (_colorB != value)
-                {
-                    _colorB = value;
-                    OnPropertyChanged(nameof(ColorB));
-                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
-                    {
-                        ResetToOriginalImage();
-                    }
-                    else
-                    {
-                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
-                    }
-                }
-            }
-        }
-
-        private float _brightnessLevel;
         public float BrightnessLevel
         {
             get => _brightnessLevel;
@@ -286,10 +160,112 @@ namespace CW4_grafika
                 }
             }
         }
-
-        private WriteableBitmap _originalImage;
-        private WriteableBitmap _currentImage;
-
+        public float ColorR
+        {
+            get => _colorR;
+            set
+            {
+                if (_colorR != value)
+                {
+                    _colorR = value;
+                    OnPropertyChanged(nameof(ColorR));
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }
+        public float ColorG
+        {
+            get => _colorG;
+            set
+            {
+                if (_colorG != value)
+                {
+                    _colorG = value;
+                    OnPropertyChanged(nameof(ColorG));
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }
+        public float ColorB
+        {
+            get => _colorB;
+            set
+            {
+                if (_colorB != value)
+                {
+                    _colorB = value;
+                    OnPropertyChanged(nameof(ColorB));
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }
+        public enum ImageOperation
+        {
+            Add,
+            Subtract,
+            Multiply,
+            Divide,
+            GrayScaleAverage,
+            GrayScaleRed,
+            GrayScaleGreen,
+            GrayScaleBlue,
+            GrayScaleMax,
+            GrayScaleMin
+        }
+        public ICommand LoadImageCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }            
+        public ImageViewModel()
+        {
+            _imageModel = new ImageModel();
+            LoadImageCommand = new RelayCommand(ExecuteLoadImage);
+            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
+        }           
+        private void ExecuteLoadImage(object parameter)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                LoadImage(openFileDialog.FileName);
+            }
+        }
+        public void LoadImage(string path)
+        {
+            var bitmapImage = new BitmapImage(new Uri(path));
+            _originalImage = new WriteableBitmap(bitmapImage);
+            Image = _originalImage;
+            _currentImage = _originalImage.Clone();
+            IsImageLoaded = true; // Ustawienie flagi po wczytaniu obrazu
+        }
+        private bool CanExecuteSave(object parameter)
+        {
+            return _currentImage != null; // Zapis możliwy, gdy obraz został wczytany
+        }
+        private void ExecuteSave(object parameter)
+        {
+            SaveCurrentStateAsOriginal();
+        }   
         public void UpdateBrightness()
         {
             if (Image == null) return;
@@ -336,7 +312,6 @@ namespace CW4_grafika
                 Image = _currentImage;
             }
         }
-
         public void UpdateImage()
         {
             // Jeśli nie ma obrazu, nie rób nic
@@ -350,9 +325,7 @@ namespace CW4_grafika
 
             // Aplikuj operację na obrazie
             ApplyRgbOperation(operation, rValue, gValue, bValue);
-        }
-
-        // Ta metoda musi zostać zaimplementowana w zależności od tego, jak chcesz mapować stringi na enumy
+        }     
         private ImageOperation DetermineOperation(string operationMode)
         {
             return operationMode switch
@@ -364,9 +337,6 @@ namespace CW4_grafika
                 _ => throw new ArgumentException("Nieznany tryb operacji", nameof(operationMode)),
             };
         }
-
-
-
         public void UpdateOperationMode(string mode)
         {
             if (mode == "Brightness")
@@ -382,16 +352,6 @@ namespace CW4_grafika
                 OperationMode = mode;
             }
         }
-        public void LoadImage(string path)
-        {
-            var bitmapImage = new BitmapImage(new Uri(path));
-            _originalImage = new WriteableBitmap(bitmapImage);
-            Image = _originalImage;
-            _currentImage = _originalImage.Clone();
-            IsImageLoaded = true; // Ustawienie flagi po wczytaniu obrazu
-        }
-
-
         public void ApplyRgbOperation(ImageOperation operation, float rValue, float gValue, float bValue)
         {
             if (_originalImage == null) return;
@@ -437,7 +397,6 @@ namespace CW4_grafika
                 _originalImage = _currentImage.Clone();
             }
         }
-
         private byte ApplyOperation(byte pixelValue, float operationValue, ImageOperation operation)
         {
             float result = pixelValue;
@@ -469,12 +428,10 @@ namespace CW4_grafika
             }
             return ClampColorValue((int)result);
         }
-
         private byte ClampColorValue(int value)
         {
             return (byte)Math.Min(Math.Max(value, 0), 255);
         }
-
         public void ConvertToGrayScale(ImageOperation grayScaleType)
         {
             if (_originalImage == null) return;
@@ -516,13 +473,6 @@ namespace CW4_grafika
             _currentImage = writableImage;
             Image = _currentImage;
         }
-
-
-
-
-
-
-
         public void ApplySmoothingFilter()
         {
             if (_originalImage == null) return;
@@ -820,7 +770,6 @@ namespace CW4_grafika
             _currentImage = writableImage;
             Image = _currentImage;
         }
-
         private byte ClampColorValue1(double value)
         {
             return (byte)Math.Max(Math.Min(value, 255), 0);
@@ -874,41 +823,7 @@ namespace CW4_grafika
             _currentImage = writableImage;
             Image = _currentImage;
         }
-
-        double[,] sharpenMask = { { -1, -1, -1 },
-                          { -1,  9, -1 },
-                          { -1, -1, -1 } };
-       
-
-        public void ApplyFilter(int filterIndex)
-        {
-            switch (filterIndex)
-            {
-                case 0:
-                    ResetToOriginalImage();
-                    break;
-                case 1:
-                    ApplySmoothingFilter();
-                    break;
-                case 2:
-                    ApplyMedianFilter();
-                    break;
-                case 3:
-                    ApplySobelFilter();
-                    break;
-                case 4:
-                    ApplySharpeningFilter();
-                    break;
-                case 5:
-                    ApplyGaussianBlur();
-                    break;
-                case 6:
-                    ResetToOriginalImage();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Nieznany filtr");
-            }
-        }
+      
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {

@@ -96,7 +96,7 @@
         </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
-            <TextBlock Text="{Binding ImagePlaceholderText}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsImageLoaded, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+            <TextBlock Text="{Binding ImagePlaceholderText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" Visibility="{Binding IsImageLoaded, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
         </Grid>
     </Grid>
 </Window>
