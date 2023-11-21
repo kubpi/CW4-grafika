@@ -30,7 +30,7 @@ namespace CW4_grafika
             this.DataContext = new ImageViewModel();
         }
 
-        private void LoadImageButton_Click(object sender, RoutedEventArgs e)
+       /* private void LoadImageButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
@@ -42,7 +42,7 @@ namespace CW4_grafika
                     viewModel.LoadImage(openFileDialog.FileName);
                 }
             }
-        }
+        }*/
         private void OperationRadioButton_Click(object sender, RoutedEventArgs e)
         {
             var radioButton = sender as RadioButton;
@@ -103,11 +103,11 @@ namespace CW4_grafika
             viewModel?.UpdateBrightness();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+/*        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as ImageViewModel;
             viewModel?.SaveCurrentStateAsOriginal();
-        }
+        }*/
 
         private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

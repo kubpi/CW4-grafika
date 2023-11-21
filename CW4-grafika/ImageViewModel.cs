@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace CW4_grafika
@@ -21,9 +23,40 @@ namespace CW4_grafika
                 OnPropertyChanged(nameof(Image));
             }
         }
+
+        public ICommand LoadImageCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
+        public ICommand ApplyConvolutionCommand { get; private set; }
+        private bool CanExecuteLoadImage(object parameter)
+        {
+            return true; // Można dodać warunki, kiedy polecenie może być wykonane
+        }
+
+        private void ExecuteLoadImage(object parameter)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                LoadImage(openFileDialog.FileName);
+            }
+        }
+
+        private bool CanExecuteSave(object parameter)
+        {
+            return _currentImage != null; // Zapis możliwy, gdy obraz został wczytany
+        }
+
+        private void ExecuteSave(object parameter)
+        {
+            SaveCurrentStateAsOriginal();
+        }
+        
         public ImageViewModel()
         {
             _imageModel = new ImageModel();
+            LoadImageCommand = new RelayCommand(ExecuteLoadImage, CanExecuteLoadImage);
+            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
         }
         public enum ImageOperation
         {
@@ -81,6 +114,7 @@ namespace CW4_grafika
                     // Ustawienie przeciwnej wartości dla IsOperationSelected
                     IsOperationSelected = !value;
                     IsGrayScaleSelected = !value;
+                    IsFiltersSelected = !value;
                 }
             }
         }
