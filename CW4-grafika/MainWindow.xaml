@@ -114,6 +114,7 @@
         <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsCustomBinarizationSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
             <TextBlock Text="Wprowadź próg binarizacji" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
             <TextBox Name="BinarizationThresholdTextBox" Text="{Binding BinarizationThreshold , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
+            <Slider Minimum="0" Maximum="255" Value="{Binding BinarizationThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
         </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />

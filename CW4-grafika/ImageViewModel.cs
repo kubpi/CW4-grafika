@@ -226,7 +226,7 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(BinarizationThreshold));
                     if (_binarizationThreshold == 0)
                     {
-                        ResetToOriginalImage();
+                      
                     }
                     else
                     {
