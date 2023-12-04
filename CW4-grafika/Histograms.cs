@@ -14,6 +14,12 @@ namespace CW4_grafika
     {
         public WriteableBitmap StretchHistogram(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int stride = width * ((image.Format.BitsPerPixel + 7) / 8);
@@ -36,12 +42,19 @@ namespace CW4_grafika
             }
 
             WriteableBitmap stretchedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
+
             stretchedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
             return stretchedImage;
         }
 
         public WriteableBitmap EqualizeHistogram(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int stride = width * ((image.Format.BitsPerPixel + 7) / 8);
@@ -79,6 +92,12 @@ namespace CW4_grafika
 
         public WriteableBitmap BinarizeImage(WriteableBitmap image, byte threshold)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -113,6 +132,12 @@ namespace CW4_grafika
 
         public WriteableBitmap PercentBlackSelection(WriteableBitmap image, double blackPercent)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -160,6 +185,12 @@ namespace CW4_grafika
 
         public WriteableBitmap MeanIterativeSelection(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -226,6 +257,12 @@ namespace CW4_grafika
 
         public WriteableBitmap EntropySelection(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -302,6 +339,12 @@ namespace CW4_grafika
 
         public WriteableBitmap OtsuThresholding(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -311,12 +354,21 @@ namespace CW4_grafika
             image.CopyPixels(pixels, stride, 0);
 
             // Calculate histogram
+            // Calculate histogram
             int[] histogram = new int[256];
-            for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+            for (int y = 0; y < height; y++)
             {
-                int grayScaleValue = (int)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
-                histogram[grayScaleValue]++;
+                for (int x = 0; x < width; x++)
+                {
+                    int i = y * stride + x * bytesPerPixel;
+                    if (i + 2 < pixels.Length) // Check to avoid going out of bounds
+                    {
+                        int grayScaleValue = (int)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
+                        histogram[grayScaleValue]++;
+                    }
+                }
             }
+
 
             int total = width * height;
             float sum = 0;
@@ -354,18 +406,27 @@ namespace CW4_grafika
             }
 
             // Apply the optimal threshold
-            for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+            for (int y = 0; y < height; y++)
             {
-                byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
-                byte binarizedValue = grayScaleValue <= threshold ? (byte)0 : (byte)255;
+                for (int x = 0; x < width; x++)
+                {
+                    int i = y * stride + x * bytesPerPixel;
+                    if (i + 2 < pixels.Length) // Check to avoid going out of bounds
+                    {
+                        byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
+                        byte binarizedValue = grayScaleValue <= threshold ? (byte)0 : (byte)255;
 
-                // Set R, G, and B to the binarized value
-                pixels[i] = binarizedValue;      // Blue channel
-                pixels[i + 1] = binarizedValue;  // Green channel
-                pixels[i + 2] = binarizedValue;  // Red channel
+                        // Set R, G, and B to the binarized value
+                        pixels[i] = binarizedValue;      // Blue channel
+                        pixels[i + 1] = binarizedValue;  // Green channel
+                        pixels[i + 2] = binarizedValue;  // Red channel
+                    }
+                }
             }
 
+
             WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
+            // This will work now because `image` is no longer using an indexed format
             binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
             return binarizedImage;
@@ -373,6 +434,12 @@ namespace CW4_grafika
 
         public WriteableBitmap NiblackThresholding(WriteableBitmap image, int windowSize, double k)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -434,6 +501,12 @@ namespace CW4_grafika
 
         public WriteableBitmap KapurThresholding(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
@@ -516,6 +589,12 @@ namespace CW4_grafika
 
         public WriteableBitmap LuWuThresholding(WriteableBitmap image)
         {
+            // Convert indexed image to a non-indexed format if necessary
+            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            {
+                // Create a non-indexed image (e.g., Bgr24)
+                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+            }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
