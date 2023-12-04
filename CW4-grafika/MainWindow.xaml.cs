@@ -143,7 +143,7 @@ namespace CW4_grafika
                     viewModel.ApplyLuWuThresholding();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Nieznany filtr");
+                    throw new ArgumentOutOfRangeException("Nieznany histogram");
             }
         }
 

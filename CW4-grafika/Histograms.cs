@@ -90,7 +90,7 @@ namespace CW4_grafika
             return equalizedImage;
         }
 
-        public WriteableBitmap BinarizeImage(WriteableBitmap image, byte threshold)
+        public WriteableBitmap BinarizeImage(WriteableBitmap image, float threshold)
         {
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)

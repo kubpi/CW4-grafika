@@ -20,7 +20,7 @@ namespace CW4_grafika
         private bool _isImageLoaded;
         private string _selectedOperation;
         private string _operationMode;
-        private float _colorR, _colorG, _colorB;
+        private float _colorR, _colorG, _colorB, _binarizationThreshold;
         private float _brightnessLevel;
         private int _selectedFilterIndex;
         private int _selectedHistogramIndex;
@@ -164,11 +164,13 @@ namespace CW4_grafika
                 if (_selectedHistogramIndex != value)
                 {
                     _selectedHistogramIndex = value;
-                    OnPropertyChanged(nameof(SelectedHistogramIndex));                
+                    OnPropertyChanged(nameof(SelectedHistogramIndex));
+                    OnPropertyChanged(nameof(IsCustomBinarizationSelected));
                 }
             }
         }
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6;
+        public bool IsCustomBinarizationSelected => SelectedHistogramIndex == 3;
         public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
         public bool CanApplyOperations => _isImageLoaded;
         public float BrightnessLevel
@@ -208,6 +210,27 @@ namespace CW4_grafika
                     else
                     {
                         UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }        
+        
+        public float BinarizationThreshold
+        {
+            get => _binarizationThreshold;
+            set
+            {
+                if (_binarizationThreshold != value)
+                {
+                    _binarizationThreshold = value;
+                    OnPropertyChanged(nameof(BinarizationThreshold));
+                    if (_binarizationThreshold == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        ApplyBinarizeImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
                     }
                 }
             }
@@ -326,7 +349,18 @@ namespace CW4_grafika
 
             // Aplikuj operację na obrazie
             ApplyRgbOperation(operation, rValue, gValue, bValue);
-        }     
+        } 
+       /* public void UpdateBinarizationThresholdImage()
+        {
+            // Jeśli nie ma obrazu, nie rób nic
+            if (Image == null) return;
+
+            // Pobierz aktualne operacje i wartości RGB
+            ImageOperation operation = _pointTransformations.DetermineOperation(OperationMode);
+            float threshold = BinarizationThreshold; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
+            ApplyBinarizeImage(BinarizationThreshold);
+       
+        }     */
         public void UpdateOperationMode(string mode)
         {
             if (mode == "Brightness")
@@ -401,7 +435,12 @@ namespace CW4_grafika
 
         public void ApplyBinarizeImage()
         {
-            //Image = _histogram.BinarizeImage(_originalImage);
+            // Jeśli nie ma obrazu, nie rób nic
+            if (Image == null) return;
+
+         
+            float threshold = BinarizationThreshold; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
+            Image = _histogram.BinarizeImage(_originalImage, threshold);
         }
 
         public void ApplyPercentBlackSelection()
