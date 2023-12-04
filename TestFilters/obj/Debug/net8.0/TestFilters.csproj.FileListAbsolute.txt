@@ -1,0 +1,6 @@
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.csproj.AssemblyReference.cache
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.AssemblyInfoInputs.cache
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.AssemblyInfo.cs
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.csproj.CoreCompileInputs.cache
+C:\Users\kubpi\Desktop\CW4-grafika\TestFilters\obj\Debug\net8.0\TestFilters.sourcelink.json

@@ -33,6 +33,7 @@
             <RadioButton Name="BrightnessButton" Content="Brightness" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="Brightness" Background="White" VerticalContentAlignment="Center" FontSize="14" IsChecked="{Binding IsBrightnessSelected, Mode=TwoWay}" IsEnabled="{Binding CanApplyOperations}"/>
             <RadioButton Name="GrayButton" Content="Gray" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
             <RadioButton Name="FiltersButton" Content="Filters" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
+            <RadioButton Name="HistogramsButton" Content="Histogram" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20 0 0 10" Grid.Row="1" Visibility="{Binding IsOperationSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="{Binding OperationMode}" VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
@@ -93,6 +94,22 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0 20 0 0">
             <Button Content="Wczytaj Obraz" Command="{Binding LoadImageCommand}" FontSize="15" Margin="20 0 20 0" Padding="10 5 10 5"/>
             <Button Content="Zastosuj zmiany"  Command="{Binding SaveCommand}" IsEnabled="{Binding CanApplyOperations}" FontSize="15" Padding="10 5 10 5"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsHistogramSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <Label Content="Wybierz opercje histogramu: "  VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
+            <ComboBox Name="HistogramsComboBox" SelectedIndex="{Binding SelectedHistogramIndex, Mode=TwoWay}" SelectionChanged="HistogramsComboBox_SelectionChanged" Margin="20 0 0 0" FontSize="14">
+                <ComboBoxItem Content="Brak"/>
+                <ComboBoxItem Content="Rozszerzanie histogramu"/>
+                <ComboBoxItem Content="Wyrównanie (equalization) histogramu"/>
+                <ComboBoxItem Content="Ręczny algorytm binaryzacji"/>
+                <ComboBoxItem Content="Procentowa selekcja czarnego (ang. Percent Black Selection)"/>
+                <ComboBoxItem Content="Selekcja iteratywna średniej (ang. Mean Iterative Selection),"/>
+                <ComboBoxItem Content="Selekcja entropii (ang. Entropy Selection)"/>
+                <ComboBoxItem Content="Otsu (binaryzacja na podstawie histogramu)"/>
+                <ComboBoxItem Content="Niblack (binaryzacja lokalna na podstawie średniej i odchylenia standardowego)"/>
+                <ComboBoxItem Content="Kapur (binaryzacja na podstawie entropii)"/>
+                <ComboBoxItem Content="LuWu (binaryzacja na podstawie entropii)"/>
+            </ComboBox>
         </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />

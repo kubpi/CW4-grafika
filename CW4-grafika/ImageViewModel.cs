@@ -15,6 +15,7 @@ namespace CW4_grafika
         private WriteableBitmap _originalImage;
         private WriteableBitmap _currentImage;   
         private Filters _filters;
+        private Histograms _histogram;
         private PointTransformations _pointTransformations;
         private bool _isImageLoaded;
         private string _selectedOperation;
@@ -22,10 +23,12 @@ namespace CW4_grafika
         private float _colorR, _colorG, _colorB;
         private float _brightnessLevel;
         private int _selectedFilterIndex;
+        private int _selectedHistogramIndex;
         private bool _isBrightnessSelected;
         private bool _isGrayScaleSelected;
         private bool _isOperationSelected;
         private bool _isFiltersSelected;
+        private bool _isHistogramSelected;
         public WriteableBitmap Image
         {
             get { return _imageModel.Image; }
@@ -126,6 +129,19 @@ namespace CW4_grafika
                 }
             }
         }
+
+        public bool IsHistogramSelected
+        {
+            get => _isHistogramSelected;
+            set
+            {
+                if (_isHistogramSelected != value)
+                {
+                    _isHistogramSelected = value;
+                    OnPropertyChanged(nameof(IsHistogramSelected));
+                }
+            }
+        }
         public int SelectedFilterIndex
         {
             get => _selectedFilterIndex;
@@ -136,6 +152,19 @@ namespace CW4_grafika
                     _selectedFilterIndex = value;
                     OnPropertyChanged(nameof(SelectedFilterIndex));
                     OnPropertyChanged(nameof(IsConvolutionFilterSelected));
+                }
+            }
+        }
+
+        public int SelectedHistogramIndex
+        {
+            get => _selectedHistogramIndex;
+            set
+            {
+                if (_selectedHistogramIndex != value)
+                {
+                    _selectedHistogramIndex = value;
+                    OnPropertyChanged(nameof(SelectedHistogramIndex));                
                 }
             }
         }
@@ -241,8 +270,9 @@ namespace CW4_grafika
         public ImageViewModel()
         {
             _imageModel = new ImageModel();
-            _filters = new Filters(); // Initialize Filters
-            _pointTransformations = new PointTransformations(); // Initialize Filters
+            _filters = new Filters();
+            _histogram = new Histograms();
+            _pointTransformations = new PointTransformations(); 
             LoadImageCommand = new RelayCommand(ExecuteLoadImage);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
         }           
@@ -359,7 +389,54 @@ namespace CW4_grafika
         {
             Image = _filters.ApplyConvolutionFilter(_originalImage,mask);
         }
-      
+
+        public void ApplyStretchHistogram()
+        {
+            Image = _histogram.OtsuThresholding(_originalImage);
+        }
+        public void ApplyEqualizeHistogram()
+        {
+            Image = _histogram.EqualizeHistogram(_originalImage);
+        }
+
+        public void ApplyBinarizeImage()
+        {
+            //Image = _histogram.BinarizeImage(_originalImage);
+        }
+
+        public void ApplyPercentBlackSelection()
+        {
+            //Image = _histogram.PercentBlackSelection(_originalImage);
+        }
+        public void ApplyMeanIterativeSelection()
+        {
+            Image = _histogram.MeanIterativeSelection(_originalImage);
+        }
+
+        public void ApplyEntropySelection()
+        {
+            Image = _histogram.EntropySelection(_originalImage);
+        }
+
+        public void ApplyOtsuThresholding()
+        {
+            Image = _histogram.OtsuThresholding(_originalImage);
+        }
+
+        public void ApplyNiblackThresholding()
+        {
+            //Image = _histogram.NiblackThresholding(_originalImage);
+        }
+
+        public void ApplyKapurThresholding()
+        {
+            Image = _histogram.KapurThresholding(_originalImage);
+        } 
+        public void ApplyLuWuThresholding()
+        {
+            Image = _histogram.LuWuThresholding(_originalImage);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {

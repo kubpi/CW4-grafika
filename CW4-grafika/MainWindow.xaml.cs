@@ -37,17 +37,29 @@ namespace CW4_grafika
                     viewModel.IsOperationSelected = false;
                     viewModel.IsBrightnessSelected = false;
                     viewModel.IsFiltersSelected = false;
-                }else if (radioButton.Name == "FiltersButton")
+                    viewModel.IsHistogramSelected = false;
+                }
+                else if (radioButton.Name == "FiltersButton")
                 {
                     viewModel.IsFiltersSelected = true;
                     viewModel.IsGrayScaleSelected = false;
                     viewModel.IsBrightnessSelected = false;
                     viewModel.IsOperationSelected = false;
+                    viewModel.IsHistogramSelected = false;
+                }
+                else if (radioButton.Name == "HistogramsButton")
+                {
+                    viewModel.IsFiltersSelected = false;
+                    viewModel.IsGrayScaleSelected = false;
+                    viewModel.IsBrightnessSelected = false;
+                    viewModel.IsOperationSelected = false;
+                    viewModel.IsHistogramSelected = true;
                 }
                 else
                 {
                     viewModel.IsGrayScaleSelected = false; // Ukryj panel skali szarości dla innych przycisków
                     viewModel.IsFiltersSelected = false;
+                    viewModel.IsHistogramSelected = false;
                     if (radioButton.Name != "BrightnessButton")
                     {
                         viewModel.UpdateOperationMode(radioButton.Content.ToString());
@@ -86,6 +98,49 @@ namespace CW4_grafika
                     break;
                 case 6:
                     viewModel.ResetToOriginalImage();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Nieznany filtr");
+            }
+        }        
+        private void HistogramsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel == null) return;
+            switch (viewModel.SelectedHistogramIndex)
+            {
+                case 0:
+                    viewModel.ResetToOriginalImage();
+                    break;
+                case 1:
+                    viewModel.ApplyStretchHistogram();
+                    break;
+                case 2:
+                    viewModel.ApplyEqualizeHistogram();
+                    break;
+                case 3:
+                    viewModel.ApplyBinarizeImage();
+                    break;
+                case 4:
+                    viewModel.ApplyPercentBlackSelection();
+                    break;
+                case 5:
+                    viewModel.ApplyMeanIterativeSelection();
+                    break;
+                case 6:
+                    viewModel.ApplyEntropySelection();
+                    break;
+                case 7:
+                    viewModel.ApplyOtsuThresholding();
+                    break;
+                case 8:
+                    viewModel.ApplyNiblackThresholding();
+                    break;
+                case 9:
+                    viewModel.ApplyKapurThresholding();
+                    break;
+                case 10:
+                    viewModel.ApplyLuWuThresholding();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznany filtr");
