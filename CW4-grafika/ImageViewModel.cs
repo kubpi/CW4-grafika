@@ -462,7 +462,8 @@ namespace CW4_grafika
         }
         public void UpdateBrightness()
         {
-            Image = _pointTransformations.UpdateBrightness(_originalImage, Image, _brightnessLevel);
+            _currentImage = _pointTransformations.UpdateBrightness(_originalImage, Image, _brightnessLevel);
+            Image = _currentImage;
         }
         public void ResetBrightness()
         {
@@ -498,7 +499,8 @@ namespace CW4_grafika
         }
         public void ApplyRgbOperation(ImageOperation operation, float rValue, float gValue, float bValue)
         {
-            Image = _pointTransformations.RgbOperation(_originalImage, operation, rValue, gValue, bValue);
+            _currentImage = _pointTransformations.RgbOperation(_originalImage, operation, rValue, gValue, bValue);
+            Image = _currentImage;
         }
         public void ResetToOriginalImage()
         {
@@ -517,94 +519,115 @@ namespace CW4_grafika
         }
         public void ConvertToGrayScale(ImageOperation grayScaleType)
         {
-            Image = _pointTransformations.GrayScale(_originalImage, grayScaleType);
+            _currentImage = _pointTransformations.GrayScale(_originalImage, grayScaleType);
+            Image = _currentImage;
         }
         public void ApplySmoothingFilter()
         {
-            Image = _filters.ApplySmoothingFilter(_originalImage);
+            _currentImage = _filters.ApplySmoothingFilter(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyMedianFilter()
         {
-            Image = _filters.ApplyMedianFilter(_originalImage);
+            _currentImage = _filters.ApplyMedianFilter(_originalImage);
+            Image = _currentImage;
         }
         public void ApplySobelFilter()
         {
-            Image = _filters.ApplySobelFilter(_originalImage);
+            _currentImage = _filters.ApplySobelFilter(_originalImage);
+            Image = _currentImage;
         }
         public void ApplySharpeningFilter()
         {
-            Image = _filters.ApplySharpeningFilter(_originalImage);
+            _currentImage = _filters.ApplySharpeningFilter(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyGaussianBlur()
         {
-            Image = _filters.ApplyGaussianBlur(_originalImage);
+            _currentImage = _filters.ApplyGaussianBlur(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyConvolutionFilter(double[,] mask)
         {
-            Image = _filters.ApplyConvolutionFilter(_originalImage, mask);
+            _currentImage = _filters.ApplyConvolutionFilter(_originalImage, mask);
+            Image = _currentImage;
         }
         public void ApplyStretchHistogram()
         {
-            Image = _histogram.StretchHistogram(_originalImage);
+            _currentImage = _histogram.StretchHistogram(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyEqualizeHistogram()
         {
-            Image = _histogram.EqualizeHistogram(_originalImage);
+            _currentImage = _histogram.EqualizeHistogram(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyBinarizeImage()
         {
             if (Image == null) return;
             float threshold = BinarizationThreshold;
-            Image = _binarizationAlgorithms.BinarizeImage(_originalImage, threshold);
+            _currentImage = _binarizationAlgorithms.BinarizeImage(_originalImage, threshold);
+            Image = _currentImage;
         }
         public void ApplyPercentBlackSelection()
         {
             if (Image == null) return;
             double threshold = ProcentBlackThreshold;
-            Image = _binarizationAlgorithms.PercentBlackSelection(_originalImage, threshold);
+            _currentImage = _binarizationAlgorithms.PercentBlackSelection(_originalImage, threshold);
+            Image = _currentImage;
         }
         public void ApplyMeanIterativeSelection()
         {
-            Image = _binarizationAlgorithms.MeanIterativeSelection(_originalImage);
+            _currentImage = _binarizationAlgorithms.MeanIterativeSelection(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyEntropySelection()
         {
-            Image = _binarizationAlgorithms.EntropySelection(_originalImage);
+            _currentImage = _binarizationAlgorithms.EntropySelection(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyOtsuThresholding()
         {
-            Image = _binarizationAlgorithms.OtsuThresholding(_originalImage);
+            _currentImage = _binarizationAlgorithms.OtsuThresholding(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyNiblackThresholding()
         {
             if (Image == null) return;
             float valueD = ValueD;
             int windowSize = WindowSize;
-            Image = _binarizationAlgorithms.NiblackThresholding(_originalImage, windowSize, valueD);
+            _currentImage = _binarizationAlgorithms.NiblackThresholding(_originalImage, windowSize, valueD);
+            Image = _currentImage;
         }
         public void ApplyKapurThresholding()
         {
-            Image = _binarizationAlgorithms.KapurThresholding(_originalImage);
+            _currentImage = _binarizationAlgorithms.KapurThresholding(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyLuWuThresholding()
         {
-            Image = _binarizationAlgorithms.LuWuThresholding(_originalImage);
+            _currentImage = _binarizationAlgorithms.LuWuThresholding(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyDilation()
         {
-            Image = _morphologicalFilters.Dilation(_originalImage);
+            _currentImage = _morphologicalFilters.Dilation(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyErosion()
         {
-            Image = _morphologicalFilters.Erosion(_originalImage);
+            _currentImage = _morphologicalFilters.Erosion(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyOpening()
         {
-            Image = _morphologicalFilters.Opening(_originalImage);
+            _currentImage = _morphologicalFilters.Opening(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyClosing()
         {
-            Image = _morphologicalFilters.Closing(_originalImage);
+            _currentImage = _morphologicalFilters.Closing(_originalImage);
+            Image = _currentImage;
         }
         public void ApplyHitOrMiss()
         {
@@ -615,7 +638,8 @@ namespace CW4_grafika
             int[,] backgroundKernel = { { 1, 0, 1 },
                             { 0, 0, 0 },
                             { 1, 0, 1 } };
-            Image = _morphologicalFilters.HitOrMiss(_originalImage, foregroundKernel, backgroundKernel);
+            _currentImage = _morphologicalFilters.HitOrMiss(_originalImage, foregroundKernel, backgroundKernel);
+            Image = _currentImage;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
