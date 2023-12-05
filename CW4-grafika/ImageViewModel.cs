@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -10,10 +11,10 @@ namespace CW4_grafika
 {
     public class ImageViewModel : INotifyPropertyChanged
     {
-       
+
         private ImageModel _imageModel;
         private WriteableBitmap _originalImage;
-        private WriteableBitmap _currentImage;   
+        private WriteableBitmap _currentImage;
         private Filters _filters;
         private Histograms _histogram;
         private MorphologicalFilters _morphologicalFilters;
@@ -56,7 +57,7 @@ namespace CW4_grafika
                     _isImageLoaded = value;
                     OnPropertyChanged(nameof(IsImageLoaded));
                     OnPropertyChanged(nameof(CanApplyOperations));
-                    OnPropertyChanged(nameof(ImagePlaceholderText)); // dodaj to
+                    OnPropertyChanged(nameof(ImagePlaceholderText));
                 }
             }
         }
@@ -94,7 +95,6 @@ namespace CW4_grafika
                 {
                     _isBrightnessSelected = value;
                     OnPropertyChanged(nameof(IsBrightnessSelected));
-                    // Ustawienie przeciwnej wartości dla IsOperationSelected
                     IsOperationSelected = !value;
                     IsGrayScaleSelected = !value;
                     IsFiltersSelected = !value;
@@ -137,7 +137,6 @@ namespace CW4_grafika
                 }
             }
         }
-
         public bool IsHistogramSelected
         {
             get => _isHistogramSelected;
@@ -149,8 +148,7 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(IsHistogramSelected));
                 }
             }
-        }  
-        
+        }
         public bool IsBinarizationAlgorithmsSelected
         {
             get => _isBinarizationAlgorithmsSelected;
@@ -162,7 +160,7 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(IsBinarizationAlgorithmsSelected));
                 }
             }
-        }        
+        }
         public bool IsMorphologicalFiltersSelected
         {
             get => _isMorphologicalFiltersSelected;
@@ -184,13 +182,13 @@ namespace CW4_grafika
                 {
                     _selectedBinarizationAlgorithmsIndex = value;
                     OnPropertyChanged(nameof(SelectedBinarizationAlgorithmsIndex));
-                    
+
                     OnPropertyChanged(nameof(IsCustomBinarizationSelected));
                     OnPropertyChanged(nameof(IsProcentBlackSelectionSelected));
                     OnPropertyChanged(nameof(IsNiblackSelected));
                 }
             }
-        } 
+        }
         public int SelectedFilterIndex
         {
             get => _selectedFilterIndex;
@@ -204,7 +202,6 @@ namespace CW4_grafika
                 }
             }
         }
-
         public int SelectedHistogramIndex
         {
             get => _selectedHistogramIndex;
@@ -216,7 +213,7 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(SelectedHistogramIndex));
                 }
             }
-        } 
+        }
         public int SelectedMorphologicalFiltersIndex
         {
             get => _selectedMorphologicalFiltersIndex;
@@ -275,8 +272,47 @@ namespace CW4_grafika
                     }
                 }
             }
-        }        
-        
+        }
+        public float ColorG
+        {
+            get => _colorG;
+            set
+            {
+                if (_colorG != value)
+                {
+                    _colorG = value;
+                    OnPropertyChanged(nameof(ColorG));
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage();
+                    }
+                }
+            }
+        }
+        public float ColorB
+        {
+            get => _colorB;
+            set
+            {
+                if (_colorB != value)
+                {
+                    _colorB = value;
+                    OnPropertyChanged(nameof(ColorB));
+                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
+                    {
+                        ResetToOriginalImage();
+                    }
+                    else
+                    {
+                        UpdateImage();
+                    }
+                }
+            }
+        }
         public float BinarizationThreshold
         {
             get => _binarizationThreshold;
@@ -285,14 +321,14 @@ namespace CW4_grafika
                 if (_binarizationThreshold != value)
                 {
                     _binarizationThreshold = value;
-                    OnPropertyChanged(nameof(BinarizationThreshold));                  
-                    if(_binarizationThreshold != 0)
+                    OnPropertyChanged(nameof(BinarizationThreshold));
+                    if (_binarizationThreshold != 0)
                     {
-                        ApplyBinarizeImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                        ApplyBinarizeImage();
                     }
                 }
             }
-        } 
+        }
         public float ProcentBlackThreshold
         {
             get => _procentBlackThreshold;
@@ -301,15 +337,14 @@ namespace CW4_grafika
                 if (_procentBlackThreshold != value)
                 {
                     _procentBlackThreshold = value;
-                    OnPropertyChanged(nameof(ProcentBlackThreshold));                  
-                    if(_procentBlackThreshold != 0)
+                    OnPropertyChanged(nameof(ProcentBlackThreshold));
+                    if (_procentBlackThreshold != 0)
                     {
-                        ApplyPercentBlackSelection(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                        ApplyPercentBlackSelection();
                     }
                 }
             }
         }
-
         public int WindowSize
         {
             get => _windowSize;
@@ -321,7 +356,7 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(WindowSize));
                     if (_windowSize != 0)
                     {
-                        ApplyNiblackThresholding(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                        ApplyNiblackThresholding();
                     }
                 }
             }
@@ -342,46 +377,6 @@ namespace CW4_grafika
                 }
             }
         }
-        public float ColorG
-        {
-            get => _colorG;
-            set
-            {
-                if (_colorG != value)
-                {
-                    _colorG = value;
-                    OnPropertyChanged(nameof(ColorG));
-                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
-                    {
-                        ResetToOriginalImage();
-                    }
-                    else
-                    {
-                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
-                    }
-                }
-            }
-        }
-        public float ColorB
-        {
-            get => _colorB;
-            set
-            {
-                if (_colorB != value)
-                {
-                    _colorB = value;
-                    OnPropertyChanged(nameof(ColorB));
-                    if (_colorR == 0 && _colorG == 0 && _colorB == 0)
-                    {
-                        ResetToOriginalImage();
-                    }
-                    else
-                    {
-                        UpdateImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
-                    }
-                }
-            }
-        }
         public enum ImageOperation
         {
             Add,
@@ -396,7 +391,8 @@ namespace CW4_grafika
             GrayScaleMin
         }
         public ICommand LoadImageCommand { get; private set; }
-        public ICommand SaveCommand { get; private set; }            
+        public ICommand SaveCommand { get; private set; }
+        public ICommand SaveImgCommand { get; private set; }
         public ImageViewModel()
         {
             _imageModel = new ImageModel();
@@ -407,7 +403,8 @@ namespace CW4_grafika
             _morphologicalFilters = new MorphologicalFilters();
             LoadImageCommand = new RelayCommand(ExecuteLoadImage);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
-        }           
+            SaveImgCommand = new RelayCommand(ExecuteSaveImage);
+        }
         private void ExecuteLoadImage(object parameter)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -423,16 +420,46 @@ namespace CW4_grafika
             _originalImage = new WriteableBitmap(bitmapImage);
             Image = _originalImage;
             _currentImage = _originalImage.Clone();
-            IsImageLoaded = true; // Ustawienie flagi po wczytaniu obrazu
+            IsImageLoaded = true;
         }
         private bool CanExecuteSave(object parameter)
         {
-            return _currentImage != null; // Zapis możliwy, gdy obraz został wczytany
+            return _currentImage != null;
         }
         private void ExecuteSave(object parameter)
         {
             SaveCurrentStateAsOriginal();
-        }   
+        }
+        private void ExecuteSaveImage(object parameter)
+        {
+            SaveImage();
+        }
+        public void SaveImage()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Pliki PNG (*.png)|*.png|Pliki JPEG (*.jpeg;*.jpg)|*.jpeg;*.jpg";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using (var fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create))
+                {
+                    BitmapEncoder encoder = null;
+                    switch (Path.GetExtension(saveFileDialog.FileName).ToLower())
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                            encoder = new JpegBitmapEncoder();
+                            break;
+                        case ".png":
+                            encoder = new PngBitmapEncoder();
+                            break;
+                        default:
+                            throw new InvalidOperationException("Nieobsługiwany format pliku");
+                    }
+                    encoder.Frames.Add(BitmapFrame.Create(_currentImage));
+                    encoder.Save(fileStream);
+                }
+            }
+        }
         public void UpdateBrightness()
         {
             Image = _pointTransformations.UpdateBrightness(_originalImage, Image, _brightnessLevel);
@@ -447,19 +474,13 @@ namespace CW4_grafika
         }
         public void UpdateImage()
         {
-            // Jeśli nie ma obrazu, nie rób nic
             if (Image == null) return;
-
-            // Pobierz aktualne operacje i wartości RGB
             ImageOperation operation = _pointTransformations.DetermineOperation(OperationMode);
-            float rValue = ColorR; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
+            float rValue = ColorR;
             float gValue = ColorG;
             float bValue = ColorB;
-
-            // Aplikuj operację na obrazie
             ApplyRgbOperation(operation, rValue, gValue, bValue);
-        } 
-
+        }
         public void UpdateOperationMode(string mode)
         {
             if (mode == "Brightness")
@@ -476,8 +497,8 @@ namespace CW4_grafika
             }
         }
         public void ApplyRgbOperation(ImageOperation operation, float rValue, float gValue, float bValue)
-        {          
-            Image = _pointTransformations.RgbOperation( _originalImage,  operation,  rValue,  gValue,  bValue);
+        {
+            Image = _pointTransformations.RgbOperation(_originalImage, operation, rValue, gValue, bValue);
         }
         public void ResetToOriginalImage()
         {
@@ -493,7 +514,7 @@ namespace CW4_grafika
             {
                 _originalImage = Image.Clone();
             }
-        }   
+        }
         public void ConvertToGrayScale(ImageOperation grayScaleType)
         {
             Image = _pointTransformations.GrayScale(_originalImage, grayScaleType);
@@ -517,12 +538,11 @@ namespace CW4_grafika
         public void ApplyGaussianBlur()
         {
             Image = _filters.ApplyGaussianBlur(_originalImage);
-        }    
+        }
         public void ApplyConvolutionFilter(double[,] mask)
         {
-            Image = _filters.ApplyConvolutionFilter(_originalImage,mask);
+            Image = _filters.ApplyConvolutionFilter(_originalImage, mask);
         }
-
         public void ApplyStretchHistogram()
         {
             Image = _histogram.StretchHistogram(_originalImage);
@@ -531,20 +551,14 @@ namespace CW4_grafika
         {
             Image = _histogram.EqualizeHistogram(_originalImage);
         }
-
         public void ApplyBinarizeImage()
         {
-            // Jeśli nie ma obrazu, nie rób nic
             if (Image == null) return;
-
-         
             float threshold = BinarizationThreshold;
             Image = _binarizationAlgorithms.BinarizeImage(_originalImage, threshold);
         }
-
         public void ApplyPercentBlackSelection()
         {
-
             if (Image == null) return;
             double threshold = ProcentBlackThreshold;
             Image = _binarizationAlgorithms.PercentBlackSelection(_originalImage, threshold);
@@ -553,35 +567,29 @@ namespace CW4_grafika
         {
             Image = _binarizationAlgorithms.MeanIterativeSelection(_originalImage);
         }
-
         public void ApplyEntropySelection()
         {
             Image = _binarizationAlgorithms.EntropySelection(_originalImage);
         }
-
         public void ApplyOtsuThresholding()
         {
             Image = _binarizationAlgorithms.OtsuThresholding(_originalImage);
         }
-
         public void ApplyNiblackThresholding()
         {
             if (Image == null) return;
-
             float valueD = ValueD;
             int windowSize = WindowSize;
-            Image = _binarizationAlgorithms.NiblackThresholding(_originalImage,windowSize, valueD);
+            Image = _binarizationAlgorithms.NiblackThresholding(_originalImage, windowSize, valueD);
         }
-
         public void ApplyKapurThresholding()
         {
             Image = _binarizationAlgorithms.KapurThresholding(_originalImage);
-        } 
+        }
         public void ApplyLuWuThresholding()
         {
             Image = _binarizationAlgorithms.LuWuThresholding(_originalImage);
         }
-
         public void ApplyDilation()
         {
             Image = _morphologicalFilters.Dilation(_originalImage);
@@ -590,7 +598,6 @@ namespace CW4_grafika
         {
             Image = _morphologicalFilters.Erosion(_originalImage);
         }
-
         public void ApplyOpening()
         {
             Image = _morphologicalFilters.Opening(_originalImage);
@@ -599,7 +606,6 @@ namespace CW4_grafika
         {
             Image = _morphologicalFilters.Closing(_originalImage);
         }
-
         public void ApplyHitOrMiss()
         {
             int[,] foregroundKernel = { { 0, 1, 0 },

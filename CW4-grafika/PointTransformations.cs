@@ -22,17 +22,17 @@ namespace CW4_grafika
                 "Divide" => ImageOperation.Divide,
                 _ => throw new ArgumentException("Nieznany tryb operacji", nameof(operationMode)),
             };
-        } 
+        }
         public WriteableBitmap RgbOperation(WriteableBitmap _originalImage, ImageOperation operation, float rValue, float gValue, float bValue)
         {
-           
+
 
             WriteableBitmap writableImage = _originalImage.Clone();
 
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
-            int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8); // bytes per row
+            int stride = width * ((writableImage.Format.BitsPerPixel + 7) / 8);
 
             byte[] pixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
@@ -42,10 +42,10 @@ namespace CW4_grafika
                 for (int x = 0; x < width; x++)
                 {
                     int index = y * stride + x * 4;
-                    pixels[index + 0] = ApplyOperation(pixels[index + 0], bValue, operation); // Blue
-                    pixels[index + 1] = ApplyOperation(pixels[index + 1], gValue, operation); // Green
-                    pixels[index + 2] = ApplyOperation(pixels[index + 2], rValue, operation); // Red
-                                                                                              // Alpha channel (index + 3) is not changed
+                    pixels[index + 0] = ApplyOperation(pixels[index + 0], bValue, operation);
+                    pixels[index + 1] = ApplyOperation(pixels[index + 1], gValue, operation);
+                    pixels[index + 2] = ApplyOperation(pixels[index + 2], rValue, operation);
+
                 }
             }
 
@@ -67,17 +67,14 @@ namespace CW4_grafika
                     result *= operationValue;
                     break;
                 case ImageOperation.Divide:
-                    // Sprawdzenie, czy wartość operationValue nie jest równa zero
+
                     if (operationValue != 0)
                     {
                         result /= operationValue;
                     }
                     else
                     {
-                        // Możesz tutaj zdecydować co zrobić, jeśli operationValue == 0
-                        // Na przykład, możesz zwrócić oryginalną wartość pixelValue
-                        // lub ustawić result na maksymalną wartość, jeśli dzielisz przez zero
-                        result = 255; // To może być traktowane jako "nieskończoność" w kontekście kolorów
+                        result = 255;
                     }
                     break;
             }
@@ -87,7 +84,6 @@ namespace CW4_grafika
         {
 
             if (Image == null) return null;
-            // Tworzenie kopii oryginalnego obrazu do modyfikacji
             WriteableBitmap writableImage = _originalImage.Clone();
 
 
@@ -103,20 +99,17 @@ namespace CW4_grafika
                 for (int x = 0; x < width; x++)
                 {
                     int index = y * stride + x * 4;
-                    for (int color = 0; color < 3; color++) // Przejdź przez R, G i B
+                    for (int color = 0; color < 3; color++)
                     {
-                        // Wczytaj obecny kolor
+
                         int colorValue = pixels[index + color];
-                        // Dodaj poziom jasności, nie przekraczając zakresu 0-255
                         colorValue = ClampColorValue(colorValue + (int)_brightnessLevel);
                         pixels[index + color] = (byte)colorValue;
                     }
-                    // Alpha channel (index + 3) pozostaje bez zmian
                 }
             }
 
             writableImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
-            // Zapisz zmodyfikowany obraz jako aktualny
             return writableImage;
         }
         public WriteableBitmap GrayScale(WriteableBitmap _originalImage, ImageOperation grayScaleType)

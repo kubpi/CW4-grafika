@@ -93,10 +93,7 @@
             <ItemsControl Name="MaskGrid" HorizontalAlignment="Center"/>
             <Button Content="Zastosuj splot" Click="ApplyConvolutionButton_Click" Padding="5" FontSize="15" Margin="10" Width="140"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0 20 0 0">
-            <Button Content="Wczytaj Obraz" Command="{Binding LoadImageCommand}" FontSize="15" Margin="20 0 20 0" Padding="10 5 10 5"/>
-            <Button Content="Zastosuj zmiany"  Command="{Binding SaveCommand}" IsEnabled="{Binding CanApplyOperations}" FontSize="15" Padding="10 5 10 5"/>
-        </StackPanel>
+        
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsHistogramSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
             <Label Content="Wybierz opercje histogramu: "  VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
             <ComboBox Name="HistogramsComboBox" SelectedIndex="{Binding SelectedHistogramIndex, Mode=TwoWay}" SelectionChanged="HistogramsComboBox_SelectionChanged" Margin="20 0 0 0" FontSize="14">
@@ -136,17 +133,22 @@
             <Slider Minimum="0" Maximum="255" Value="{Binding BinarizationThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsProcentBlackSelectionSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
-            <TextBlock Text="Wprowadź procent slekcji czarnego" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBlock Text="Wprowadź procent selekcji czarnego" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
             <TextBox Name="ProcentBlackThresholdTextBox" Text="{Binding ProcentBlackThreshold , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
             <Slider Minimum="0" Maximum="100" Value="{Binding ProcentBlackThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsNiblackSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
-            <TextBlock Text="Wprowadź windowsize oraz wartosc k" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBlock Text="Wprowadź windowsize" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
             <TextBox Name="WindowSizeTextBox" Text="{Binding WindowSize , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
             <Slider Minimum="0" Maximum="10" Value="{Binding WindowSize, Mode=TwoWay}" Width="100" TickFrequency="5"/>
             <TextBlock Text="Wprowadź wartosc k" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
             <TextBox Name="ValueDTextBox" Text="{Binding ValueD , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
             <Slider Minimum="-0.5" Maximum="0.5" Value="{Binding ValueD, Mode=TwoWay}" Width="100" TickFrequency="5"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0 20 0 0">
+            <Button Content="Wczytaj Obraz" Command="{Binding LoadImageCommand}" FontSize="15" Margin="20 0 20 0" Padding="10 5 10 5"/>
+            <Button Content="Zastosuj zmiany"  Command="{Binding SaveCommand}" IsEnabled="{Binding CanApplyOperations}" FontSize="15" Padding="10 5 10 5"/>
+            <Button Content="Zapisz obraz"  Command="{Binding SaveImgCommand}" IsEnabled="{Binding CanApplyOperations}" Margin="20 0 20 0" FontSize="15" Padding="10 5 10 5"/>
         </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />

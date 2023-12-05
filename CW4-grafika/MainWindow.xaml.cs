@@ -23,14 +23,11 @@ namespace CW4_grafika
 
             if (viewModel != null)
             {
-                // Resetuj wartości RGB i jasności do 0
                 viewModel.ColorR = 0;
                 viewModel.ColorG = 0;
                 viewModel.ColorB = 0;
                 viewModel.BrightnessLevel = 0;
-
-                
-                // Sprawdź, czy wybrano GrayButton
+            
                 if (radioButton.Name == "GrayButton")
                 {
                     viewModel.IsGrayScaleSelected = true;
@@ -83,7 +80,7 @@ namespace CW4_grafika
                 }
                 else
                 {
-                    viewModel.IsGrayScaleSelected = false; // Ukryj panel skali szarości dla innych przycisków
+                    viewModel.IsGrayScaleSelected = false;
                     viewModel.IsFiltersSelected = false;
                     viewModel.IsHistogramSelected = false;
                     viewModel.IsBinarizationAlgorithmsSelected = false;
@@ -98,8 +95,7 @@ namespace CW4_grafika
                     }
                 }
             }
-        }
-             
+        }           
         private void FiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var viewModel = DataContext as ImageViewModel;
@@ -228,10 +224,10 @@ namespace CW4_grafika
 
             switch (selectedMethod)
             {
-                case 0: // Brak skali szarości
+                case 0:
                     viewModel.ResetToOriginalImage();
                     break;
-                case 1: // Średnia RGB
+                case 1:
                     viewModel.ConvertToGrayScale(ImageViewModel.ImageOperation.GrayScaleAverage);
                     break;
                 case 2:
@@ -292,8 +288,6 @@ namespace CW4_grafika
                     mask[i, j] = value;
                 }
             }
-
-            // Przykład wywołania metody z ImageViewModel z podaną maską
             var viewModel = DataContext as ImageViewModel;
             viewModel?.ApplyConvolutionFilter(mask);
         }

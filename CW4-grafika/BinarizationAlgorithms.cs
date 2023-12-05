@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
-using System.ComponentModel;
 
 namespace CW4_grafika
 {
@@ -14,16 +10,14 @@ namespace CW4_grafika
     {
         public WriteableBitmap BinarizeImage(WriteableBitmap image, float threshold)
         {
-            // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
-                // Create a non-indexed image (e.g., Bgr24)
                 image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
             }
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-            int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+            int stride = (width * bytesPerPixel + 3) & ~3;
 
             byte[] pixels = new byte[height * stride];
             image.CopyPixels(pixels, stride, 0);
@@ -33,16 +27,12 @@ namespace CW4_grafika
                 for (int x = 0; x < width; x++)
                 {
                     int index = y * stride + x * bytesPerPixel;
-
-                    // Assuming the image is in ARGB format, we can ignore the alpha channel at index + 3
                     byte grayScaleValue = (byte)(0.3 * pixels[index + 2] + 0.59 * pixels[index + 1] + 0.11 * pixels[index]);
-
                     byte binarizedValue = grayScaleValue >= threshold ? (byte)255 : (byte)0;
 
-                    // Set R, G, and B to the same value for binary image
-                    pixels[index] = binarizedValue;      // Blue channel
-                    pixels[index + 1] = binarizedValue;  // Green channel
-                    pixels[index + 2] = binarizedValue;  // Red channel
+                    pixels[index] = binarizedValue;      
+                    pixels[index + 1] = binarizedValue; 
+                    pixels[index + 2] = binarizedValue;
                 }
             }
 
@@ -56,21 +46,18 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3;
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Convert to grayscale and store in a list
                 List<byte> grayScaleValues = new List<byte>();
                 for (int y = 0; y < height; y++)
                 {
@@ -82,26 +69,20 @@ namespace CW4_grafika
                     }
                 }
 
-                // Sort the grayscale values
                 grayScaleValues.Sort();
 
-                // Calculate the threshold based on the desired percentage of black
                 int thresholdIndex = (int)(blackPercent * grayScaleValues.Count / 100.0);
-                // Clamp thresholdIndex to be within the valid range
                 thresholdIndex = Math.Max(0, Math.Min(thresholdIndex, grayScaleValues.Count - 1));
                 byte threshold = grayScaleValues[thresholdIndex];
 
-
-                // Apply the threshold
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
                     byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                     byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
 
-                    // Set R, G, and B to the binarized value
-                    pixels[i] = binarizedValue;      // Blue channel
-                    pixels[i + 1] = binarizedValue;  // Green channel
-                    pixels[i + 2] = binarizedValue;  // Red channel
+                    pixels[i] = binarizedValue;    
+                    pixels[i + 1] = binarizedValue; 
+                    pixels[i + 2] = binarizedValue; 
                 }
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
@@ -112,7 +93,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -120,21 +101,18 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3;
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Initial threshold (you can also use a fixed value, like 128)
                 double threshold = 0;
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
@@ -172,16 +150,14 @@ namespace CW4_grafika
                     threshold = newThreshold;
                 } while (thresholdChanged);
 
-                // Apply the final threshold
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
                     byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                     byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
 
-                    // Set R, G, and B to the binarized value
-                    pixels[i] = binarizedValue;      // Blue channel
-                    pixels[i + 1] = binarizedValue;  // Green channel
-                    pixels[i + 2] = binarizedValue;  // Red channel
+                    pixels[i] = binarizedValue;      
+                    pixels[i + 1] = binarizedValue;  
+                    pixels[i + 2] = binarizedValue;  
                 }
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
@@ -192,7 +168,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -200,21 +176,18 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3;
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Convert to grayscale and get histogram
                 int[] histogram = new int[256];
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
@@ -262,16 +235,14 @@ namespace CW4_grafika
                     }
                 }
 
-                // Apply the optimal threshold
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
                     byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                     byte binarizedValue = grayScaleValue <= optimalThreshold ? (byte)0 : (byte)255;
 
-                    // Set R, G, and B to the binarized value
-                    pixels[i] = binarizedValue;      // Blue channel
-                    pixels[i + 1] = binarizedValue;  // Green channel
-                    pixels[i + 2] = binarizedValue;  // Red channel
+                    pixels[i] = binarizedValue;      
+                    pixels[i + 1] = binarizedValue;  
+                    pixels[i + 2] = binarizedValue;  
                 }
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
@@ -282,7 +253,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -290,29 +261,25 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3;
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Calculate histogram
-                // Calculate histogram
                 int[] histogram = new int[256];
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         int i = y * stride + x * bytesPerPixel;
-                        if (i + 2 < pixels.Length) // Check to avoid going out of bounds
+                        if (i + 2 < pixels.Length)
                         {
                             int grayScaleValue = (int)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                             histogram[grayScaleValue]++;
@@ -334,21 +301,19 @@ namespace CW4_grafika
 
                 for (int i = 0; i < 256; i++)
                 {
-                    wB += histogram[i];               // Weight Background
+                    wB += histogram[i];           
                     if (wB == 0) continue;
 
-                    wF = total - wB;                  // Weight Foreground
+                    wF = total - wB;               
                     if (wF == 0) break;
 
                     sumB += (float)(i * histogram[i]);
 
-                    float mB = sumB / wB;             // Mean Background
-                    float mF = (sum - sumB) / wF;     // Mean Foreground
+                    float mB = sumB / wB;          
+                    float mF = (sum - sumB) / wF;     
 
-                    // Calculate Between Class Variance
                     float varBetween = (float)wB * (float)wF * (mB - mF) * (mB - mF);
 
-                    // Check if new maximum found
                     if (varBetween > varMax)
                     {
                         varMax = varBetween;
@@ -356,28 +321,25 @@ namespace CW4_grafika
                     }
                 }
 
-                // Apply the optimal threshold
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         int i = y * stride + x * bytesPerPixel;
-                        if (i + 2 < pixels.Length) // Check to avoid going out of bounds
+                        if (i + 2 < pixels.Length)
                         {
                             byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                             byte binarizedValue = grayScaleValue <= threshold ? (byte)0 : (byte)255;
 
-                            // Set R, G, and B to the binarized value
-                            pixels[i] = binarizedValue;      // Blue channel
-                            pixels[i + 1] = binarizedValue;  // Green channel
-                            pixels[i + 2] = binarizedValue;  // Red channel
+                            pixels[i] = binarizedValue;      
+                            pixels[i + 1] = binarizedValue;  
+                            pixels[i + 2] = binarizedValue;  
                         }
                     }
                 }
 
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
-                // This will work now because `image` is no longer using an indexed format
                 binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
                 return binarizedImage;
@@ -385,7 +347,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -393,16 +355,14 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3;
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
@@ -460,7 +420,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -468,21 +428,18 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3; 
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Calculate histogram
                 int[] histogram = new int[256];
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
@@ -536,16 +493,14 @@ namespace CW4_grafika
                     }
                 }
 
-                // Apply the optimal threshold
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
                     byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                     byte binarizedValue = grayScaleValue <= optimalThreshold ? (byte)0 : (byte)255;
 
-                    // Set R, G, and B to the binarized value
-                    pixels[i] = binarizedValue;      // Blue channel
-                    pixels[i + 1] = binarizedValue;  // Green channel
-                    pixels[i + 2] = binarizedValue;  // Red channel
+                    pixels[i] = binarizedValue;     
+                    pixels[i + 1] = binarizedValue;  
+                    pixels[i + 2] = binarizedValue;  
                 }
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
@@ -556,7 +511,7 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
 
@@ -564,21 +519,18 @@ namespace CW4_grafika
         {
             try
             {
-                // Convert indexed image to a non-indexed format if necessary
                 if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    // Create a non-indexed image (e.g., Bgr24)
                     image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
                 int width = image.PixelWidth;
                 int height = image.PixelHeight;
                 int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                int stride = (width * bytesPerPixel + 3) & ~3; 
 
                 byte[] pixels = new byte[height * stride];
                 image.CopyPixels(pixels, stride, 0);
 
-                // Calculate histogram
                 int[] histogram = new int[256];
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
@@ -613,14 +565,12 @@ namespace CW4_grafika
 
                     if (sumBack == 0 || sumFore == 0) continue;
 
-                    // Calculate entropy for the background
                     for (int i = 0; i <= t; i++)
                     {
                         if (probability[i] == 0) continue;
                         entropyBack += Math.Sqrt(probability[i] / sumBack);
                     }
 
-                    // Calculate entropy for the foreground
                     for (int i = t + 1; i < 256; i++)
                     {
                         if (probability[i] == 0) continue;
@@ -636,16 +586,14 @@ namespace CW4_grafika
 
                 }
 
-                // Apply the optimal threshold
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
                     byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
                     byte binarizedValue = grayScaleValue <= optimalThreshold ? (byte)0 : (byte)255;
 
-                    // Set R, G, and B to the binarized value
-                    pixels[i] = binarizedValue;      // Blue channel
-                    pixels[i + 1] = binarizedValue;  // Green channel
-                    pixels[i + 2] = binarizedValue;  // Red channel
+                    pixels[i] = binarizedValue;     
+                    pixels[i + 1] = binarizedValue;  
+                    pixels[i + 2] = binarizedValue;  
                 }
 
                 WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
@@ -656,15 +604,9 @@ namespace CW4_grafika
             catch (ArgumentOutOfRangeException ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // or return the original image, depending on your requirement
+                return null;
             }
         }
-        
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        }
+                
     }
 }

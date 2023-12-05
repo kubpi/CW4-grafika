@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using System.ComponentModel;
 
 namespace CW4_grafika
 {
-    public class Filters : INotifyPropertyChanged
-    {     
+    public class Filters
+    {
         public WriteableBitmap ApplySmoothingFilter(WriteableBitmap _originalImage)
         {
             if (_originalImage == null) return null;
 
             WriteableBitmap writableImage = _originalImage.Clone();
-
-
 
             int width = writableImage.PixelWidth;
             int height = writableImage.PixelHeight;
@@ -27,7 +21,7 @@ namespace CW4_grafika
             byte[] newPixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
 
-            int filterSize = 3; // Rozmiar maski filtru 3x3
+            int filterSize = 3;
             int filterOffset = filterSize / 2;
             int calculatedStride = stride / 4;
 
@@ -40,7 +34,6 @@ namespace CW4_grafika
                     float sumB = 0, sumG = 0, sumR = 0;
                     int count = 0;
 
-                    // Pętla po masce filtru
                     for (int fy = -filterOffset; fy <= filterOffset; fy++)
                     {
                         for (int fx = -filterOffset; fx <= filterOffset; fx++)
@@ -54,17 +47,16 @@ namespace CW4_grafika
                         }
                     }
 
-                    // Obliczanie średniej wartości piksela
                     newPixels[byteIndex] = ClampColorValue((int)(sumB / count));
                     newPixels[byteIndex + 1] = ClampColorValue((int)(sumG / count));
                     newPixels[byteIndex + 2] = ClampColorValue((int)(sumR / count));
-                    newPixels[byteIndex + 3] = 255; // Alfa niezmieniona
+                    newPixels[byteIndex + 3] = 255;
                 }
             }
 
-            writableImage.WritePixels(new Int32Rect(0, 0, width, height), newPixels, stride, 0);        
+            writableImage.WritePixels(new Int32Rect(0, 0, width, height), newPixels, stride, 0);
             return writableImage;
-           
+
         }
         public WriteableBitmap ApplyMedianFilter(WriteableBitmap _originalImage)
         {
@@ -80,7 +72,7 @@ namespace CW4_grafika
             byte[] newPixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
 
-            int filterSize = 3; // Rozmiar maski filtru 3x3
+            int filterSize = 3;
             int filterOffset = filterSize / 2;
             List<byte> neighbourPixels = new List<byte>();
 
@@ -90,27 +82,22 @@ namespace CW4_grafika
                 {
                     int byteIndex = y * stride + x * 4;
 
-                    // Wyczyszczenie listy sąsiednich pikseli
                     neighbourPixels.Clear();
 
-                    // Pętla po masce filtru
                     for (int fy = -filterOffset; fy <= filterOffset; fy++)
                     {
                         for (int fx = -filterOffset; fx <= filterOffset; fx++)
                         {
                             int index = (y + fy) * stride + (x + fx) * 4;
 
-                            // Dodaj wartości RGB do listy
-                            neighbourPixels.Add(pixels[index]);     // B
-                            neighbourPixels.Add(pixels[index + 1]); // G
-                            neighbourPixels.Add(pixels[index + 2]); // R
+                            neighbourPixels.Add(pixels[index]);
+                            neighbourPixels.Add(pixels[index + 1]);
+                            neighbourPixels.Add(pixels[index + 2]);
                         }
                     }
 
-                    // Sortowanie listy
                     neighbourPixels.Sort();
 
-                    // Wyznaczenie mediany dla każdego kanału
                     byte medianB = neighbourPixels[neighbourPixels.Count / 2];
                     byte medianG = neighbourPixels[neighbourPixels.Count / 2 + 1];
                     byte medianR = neighbourPixels[neighbourPixels.Count / 2 + 2];
@@ -118,7 +105,7 @@ namespace CW4_grafika
                     newPixels[byteIndex] = medianB;
                     newPixels[byteIndex + 1] = medianG;
                     newPixels[byteIndex + 2] = medianR;
-                    newPixels[byteIndex + 3] = 255; // Alfa niezmieniona
+                    newPixels[byteIndex + 3] = 255;
                 }
             }
 
@@ -139,7 +126,6 @@ namespace CW4_grafika
             byte[] newPixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
 
-            // Maski filtru Sobela
             int[] gx = new int[]
             {
         -1, 0, 1,
@@ -161,7 +147,6 @@ namespace CW4_grafika
                     float gradientX = 0;
                     float gradientY = 0;
 
-                    // Oblicz gradient dla piksela (x, y)
                     for (int filterY = 0; filterY < 3; filterY++)
                     {
                         for (int filterX = 0; filterX < 3; filterX++)
@@ -177,16 +162,14 @@ namespace CW4_grafika
                         }
                     }
 
-                    // Oblicz ostateczną wartość gradientu (magnitudę)
                     float gradientMagnitude = (float)Math.Sqrt((gradientX * gradientX) + (gradientY * gradientY));
                     byte gradientValue = (byte)ClampColorValue((int)gradientMagnitude);
 
-                    // Ustaw piksel (x, y) na nową wartość gradientu
                     int byteIndex = y * stride + x * 4;
-                    newPixels[byteIndex] = gradientValue; // B
-                    newPixels[byteIndex + 1] = gradientValue; // G
-                    newPixels[byteIndex + 2] = gradientValue; // R
-                    newPixels[byteIndex + 3] = 255; // A
+                    newPixels[byteIndex] = gradientValue;
+                    newPixels[byteIndex + 1] = gradientValue;
+                    newPixels[byteIndex + 2] = gradientValue;
+                    newPixels[byteIndex + 3] = 255;
                 }
             }
 
@@ -207,7 +190,6 @@ namespace CW4_grafika
             byte[] newPixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
 
-            // Maska filtra wyostrzającego
             int[] mask = new int[]
             {
         -1, -1, -1,
@@ -221,7 +203,6 @@ namespace CW4_grafika
                 {
                     int pixelR = 0, pixelG = 0, pixelB = 0;
 
-                    // Aplikacja maski na pikselach
                     for (int filterY = 0; filterY < 3; filterY++)
                     {
                         for (int filterX = 0; filterX < 3; filterX++)
@@ -236,7 +217,6 @@ namespace CW4_grafika
                         }
                     }
 
-                    // Ustawienie piksela
                     int index = y * stride + x * 4;
                     newPixels[index] = (byte)ClampColorValue(pixelB);
                     newPixels[index + 1] = (byte)ClampColorValue(pixelG);
@@ -262,14 +242,13 @@ namespace CW4_grafika
             byte[] newPixels = new byte[height * stride];
             writableImage.CopyPixels(pixels, stride, 0);
 
-            // Maska filtra gaussowskiego 3x3 z sigma = 1.0
             double[] mask = new double[]
             {
         1, 2, 1,
         2, 4, 2,
         1, 2, 1
             };
-            double maskSum = 16; // Suma wartości w masce
+            double maskSum = 16;
 
             for (int y = 1; y < height - 1; y++)
             {
@@ -277,7 +256,6 @@ namespace CW4_grafika
                 {
                     double pixelR = 0, pixelG = 0, pixelB = 0;
 
-                    // Aplikacja maski na pikselach
                     for (int filterY = 0; filterY < 3; filterY++)
                     {
                         for (int filterX = 0; filterX < 3; filterX++)
@@ -292,12 +270,11 @@ namespace CW4_grafika
                         }
                     }
 
-                    // Ustawienie piksela
                     int index = y * stride + x * 4;
                     newPixels[index] = (byte)ClampColorValue1(pixelB / maskSum);
                     newPixels[index + 1] = (byte)ClampColorValue1(pixelG / maskSum);
                     newPixels[index + 2] = (byte)ClampColorValue1(pixelR / maskSum);
-                    newPixels[index + 3] = 255; // Alpha wartość niezmieniona
+                    newPixels[index + 3] = 255;
                 }
             }
 
@@ -349,7 +326,7 @@ namespace CW4_grafika
                     newPixels[index] = (byte)ClampColorValue1(pixelB);
                     newPixels[index + 1] = (byte)ClampColorValue1(pixelG);
                     newPixels[index + 2] = (byte)ClampColorValue1(pixelR);
-                    newPixels[index + 3] = 255; // Alpha wartość niezmieniona
+                    newPixels[index + 3] = 255;
                 }
             }
 
@@ -361,10 +338,6 @@ namespace CW4_grafika
             return (byte)Math.Min(Math.Max(value, 0), 255);
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+
     }
 }

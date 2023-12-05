@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
 
@@ -15,9 +11,8 @@ namespace CW4_grafika
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-            // Ensure stride is a multiple of 4
             int stride = width * bytesPerPixel;
-            stride = ((stride + 3) / 4) * 4;  // The stride is rounded up to the nearest multiple of 4
+            stride = ((stride + 3) / 4) * 4;
 
             byte[] pixels = new byte[height * stride];
             byte[] outputPixels = new byte[height * stride];
@@ -29,9 +24,8 @@ namespace CW4_grafika
                 for (int x = 1; x < width - 1; x++)
                 {
                     int index = y * stride + x;
-                    if (pixels[index] == 255) // If the current pixel is white
+                    if (pixels[index] == 255)
                     {
-                        // Set the current pixel and all its 8 neighbours to white
                         for (int ty = -1; ty <= 1; ty++)
                         {
                             for (int tx = -1; tx <= 1; tx++)
@@ -47,15 +41,13 @@ namespace CW4_grafika
             outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixels, stride, 0);
             return outputImage;
         }
-
         public WriteableBitmap Erosion(WriteableBitmap image)
         {
             int width = image.PixelWidth;
             int height = image.PixelHeight;
             int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-            // Ensure stride is a multiple of 4
             int stride = width * bytesPerPixel;
-            stride = ((stride + 3) / 4) * 4;  // The stride is rounded up to the nearest multiple of 4
+            stride = ((stride + 3) / 4) * 4;
 
             byte[] pixels = new byte[height * stride];
             byte[] outputPixels = new byte[height * stride];
@@ -69,9 +61,8 @@ namespace CW4_grafika
                 {
                     int index = y * stride + x;
                     bool erodePixel = false;
-                    if (pixels[index] == 255) // If the current pixel is white
+                    if (pixels[index] == 255)
                     {
-                        // Check all its 8 neighbours to see if they are all white
                         for (int ty = -1; ty <= 1; ty++)
                         {
                             for (int tx = -1; tx <= 1; tx++)
@@ -86,7 +77,7 @@ namespace CW4_grafika
                         }
                         if (erodePixel)
                         {
-                            outputPixels[index] = 0; // Erode pixel
+                            outputPixels[index] = 0;
                         }
                     }
                 }
@@ -96,12 +87,10 @@ namespace CW4_grafika
             outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixels, stride, 0);
             return outputImage;
         }
-
         public WriteableBitmap Opening(WriteableBitmap image)
         {
             return Dilation(Erosion(image));
         }
-
         public WriteableBitmap Closing(WriteableBitmap image)
         {
             return Erosion(Dilation(image));
@@ -122,7 +111,6 @@ namespace CW4_grafika
             int kernelOriginX = kernelWidth / 2;
             int kernelOriginY = kernelHeight / 2;
 
-            // Assume the image is already binarized
             for (int y = kernelOriginY; y < height - kernelOriginY; y++)
             {
                 for (int x = kernelOriginX; x < width - kernelOriginX; x++)
@@ -159,10 +147,6 @@ namespace CW4_grafika
             outputImage.WritePixels(new Int32Rect(0, 0, width, height), outputPixels, stride, 0);
             return outputImage;
         }
-        
-        
-
-
 
     }
 }

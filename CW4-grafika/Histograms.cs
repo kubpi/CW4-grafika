@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows; // For MessageBox
 
 namespace CW4_grafika
 {
-    public class Histograms: INotifyPropertyChanged
+    public class Histograms
     {
         public WriteableBitmap StretchHistogram(WriteableBitmap image)
         {
-            // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
-                // Create a non-indexed image (e.g., Bgr24)
                 image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
             }
             int width = image.PixelWidth;
@@ -47,13 +39,10 @@ namespace CW4_grafika
             stretchedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
             return stretchedImage;
         }
-
         public WriteableBitmap EqualizeHistogram(WriteableBitmap image)
         {
-            // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
-                // Create a non-indexed image (e.g., Bgr24)
                 image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
             }
             int width = image.PixelWidth;
@@ -90,18 +79,6 @@ namespace CW4_grafika
             equalizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
             return equalizedImage;
         }
-
-        
-
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        }
-       
-
     }
 
 }
