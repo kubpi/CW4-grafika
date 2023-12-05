@@ -20,7 +20,7 @@ namespace CW4_grafika
         private bool _isImageLoaded;
         private string _selectedOperation;
         private string _operationMode;
-        private float _colorR, _colorG, _colorB, _binarizationThreshold;
+        private float _colorR, _colorG, _colorB, _binarizationThreshold, _procentBlackThreshold;
         private float _brightnessLevel;
         private int _selectedFilterIndex;
         private int _selectedHistogramIndex;
@@ -166,11 +166,13 @@ namespace CW4_grafika
                     _selectedHistogramIndex = value;
                     OnPropertyChanged(nameof(SelectedHistogramIndex));
                     OnPropertyChanged(nameof(IsCustomBinarizationSelected));
+                    OnPropertyChanged(nameof(IsProcentBlackSelectionSelected));
                 }
             }
         }
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6;
         public bool IsCustomBinarizationSelected => SelectedHistogramIndex == 3;
+        public bool IsProcentBlackSelectionSelected => SelectedHistogramIndex == 4;
         public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
         public bool CanApplyOperations => _isImageLoaded;
         public float BrightnessLevel
@@ -223,14 +225,26 @@ namespace CW4_grafika
                 if (_binarizationThreshold != value)
                 {
                     _binarizationThreshold = value;
-                    OnPropertyChanged(nameof(BinarizationThreshold));
-                    if (_binarizationThreshold == 0)
-                    {
-                      
-                    }
-                    else
+                    OnPropertyChanged(nameof(BinarizationThreshold));                  
+                    if(_binarizationThreshold != 0)
                     {
                         ApplyBinarizeImage(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        } 
+        public float ProcentBlackThreshold
+        {
+            get => _procentBlackThreshold;
+            set
+            {
+                if (_procentBlackThreshold != value)
+                {
+                    _procentBlackThreshold = value;
+                    OnPropertyChanged(nameof(ProcentBlackThreshold));                  
+                    if(_procentBlackThreshold != 0)
+                    {
+                        ApplyPercentBlackSelection(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
                     }
                 }
             }
@@ -350,17 +364,7 @@ namespace CW4_grafika
             // Aplikuj operację na obrazie
             ApplyRgbOperation(operation, rValue, gValue, bValue);
         } 
-       /* public void UpdateBinarizationThresholdImage()
-        {
-            // Jeśli nie ma obrazu, nie rób nic
-            if (Image == null) return;
 
-            // Pobierz aktualne operacje i wartości RGB
-            ImageOperation operation = _pointTransformations.DetermineOperation(OperationMode);
-            float threshold = BinarizationThreshold; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
-            ApplyBinarizeImage(BinarizationThreshold);
-       
-        }     */
         public void UpdateOperationMode(string mode)
         {
             if (mode == "Brightness")
@@ -439,13 +443,16 @@ namespace CW4_grafika
             if (Image == null) return;
 
          
-            float threshold = BinarizationThreshold; // Załóżmy, że masz właściwości ColorR, ColorG, ColorB
+            float threshold = BinarizationThreshold;
             Image = _histogram.BinarizeImage(_originalImage, threshold);
         }
 
         public void ApplyPercentBlackSelection()
         {
-            //Image = _histogram.PercentBlackSelection(_originalImage);
+
+            if (Image == null) return;
+            double threshold = ProcentBlackThreshold;
+            Image = _histogram.PercentBlackSelection(_originalImage, threshold);
         }
         public void ApplyMeanIterativeSelection()
         {

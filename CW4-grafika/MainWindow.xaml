@@ -116,6 +116,11 @@
             <TextBox Name="BinarizationThresholdTextBox" Text="{Binding BinarizationThreshold , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
             <Slider Minimum="0" Maximum="255" Value="{Binding BinarizationThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
         </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsProcentBlackSelectionSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
+            <TextBlock Text="Wprowadź procent slekcji czarnego" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBox Name="ProcentBlackThresholdTextBox" Text="{Binding ProcentBlackThreshold , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
+            <Slider Minimum="0" Maximum="100" Value="{Binding ProcentBlackThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
+        </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <TextBlock Text="{Binding ImagePlaceholderText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" Visibility="{Binding IsImageLoaded, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
