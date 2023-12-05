@@ -38,6 +38,7 @@ namespace CW4_grafika
                     viewModel.IsBrightnessSelected = false;
                     viewModel.IsFiltersSelected = false;
                     viewModel.IsHistogramSelected = false;
+                    viewModel.IsBinarizationAlgorithmsSelected = false;
                 }
                 else if (radioButton.Name == "FiltersButton")
                 {
@@ -46,6 +47,7 @@ namespace CW4_grafika
                     viewModel.IsBrightnessSelected = false;
                     viewModel.IsOperationSelected = false;
                     viewModel.IsHistogramSelected = false;
+                    viewModel.IsBinarizationAlgorithmsSelected = false;
                 }
                 else if (radioButton.Name == "HistogramsButton")
                 {
@@ -54,12 +56,23 @@ namespace CW4_grafika
                     viewModel.IsBrightnessSelected = false;
                     viewModel.IsOperationSelected = false;
                     viewModel.IsHistogramSelected = true;
+                    viewModel.IsBinarizationAlgorithmsSelected = false;
+                }
+                else if (radioButton.Name == "BinarizationAlgorithmsButton")
+                {
+                    viewModel.IsFiltersSelected = false;
+                    viewModel.IsGrayScaleSelected = false;
+                    viewModel.IsBrightnessSelected = false;
+                    viewModel.IsOperationSelected = false;
+                    viewModel.IsHistogramSelected = false;
+                    viewModel.IsBinarizationAlgorithmsSelected = true;
                 }
                 else
                 {
                     viewModel.IsGrayScaleSelected = false; // Ukryj panel skali szarości dla innych przycisków
                     viewModel.IsFiltersSelected = false;
                     viewModel.IsHistogramSelected = false;
+                    viewModel.IsBinarizationAlgorithmsSelected = false;
                     if (radioButton.Name != "BrightnessButton")
                     {
                         viewModel.UpdateOperationMode(radioButton.Content.ToString());
@@ -118,34 +131,49 @@ namespace CW4_grafika
                 case 2:
                     viewModel.ApplyEqualizeHistogram();
                     break;
-                case 3:
+                default:
+                    throw new ArgumentOutOfRangeException("Nieznany histogram");
+            }
+        }
+
+        private void BinarizationAlgorithmsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel == null) return;
+            switch (viewModel.SelectedBinarizationAlgorithmsIndex)
+            {
+                case 0:
+                    viewModel.ResetToOriginalImage();
+                    break;                
+                case 1:
                     viewModel.ApplyBinarizeImage();
                     break;
-                case 4:
+                case 2:
                     viewModel.ApplyPercentBlackSelection();
                     break;
-                case 5:
+                case 3:
                     viewModel.ApplyMeanIterativeSelection();
                     break;
-                case 6:
+                case 4:
                     viewModel.ApplyEntropySelection();
                     break;
-                case 7:
+                case 5:
                     viewModel.ApplyOtsuThresholding();
                     break;
-                case 8:
+                case 6:
                     viewModel.ApplyNiblackThresholding();
                     break;
-                case 9:
+                case 7:
                     viewModel.ApplyKapurThresholding();
                     break;
-                case 10:
+                case 8:
                     viewModel.ApplyLuWuThresholding();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznany histogram");
             }
         }
+        
 
         private void GrayScaleMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

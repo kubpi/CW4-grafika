@@ -34,6 +34,7 @@
             <RadioButton Name="GrayButton" Content="Gray" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
             <RadioButton Name="FiltersButton" Content="Filters" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
             <RadioButton Name="HistogramsButton" Content="Histogram" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
+            <RadioButton Name="BinarizationAlgorithmsButton" Content="Binarization algorithms" GroupName="OperationGroup" Padding="5" Margin="40 50 0 70" ToolTip="PPM" Background="White" FontSize="15" VerticalContentAlignment="Center" Click="OperationRadioButton_Click" IsEnabled="{Binding CanApplyOperations}"></RadioButton>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20 0 0 10" Grid.Row="1" Visibility="{Binding IsOperationSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="{Binding OperationMode}" VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
@@ -101,6 +102,12 @@
                 <ComboBoxItem Content="Brak"/>
                 <ComboBoxItem Content="Rozszerzanie histogramu"/>
                 <ComboBoxItem Content="Wyrównanie (equalization) histogramu"/>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 10 0 10" Grid.Row="1"  Visibility="{Binding IsBinarizationAlgorithmsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <Label Content="Wybierz opercje histogramu: "  VerticalAlignment="Center" Margin="10 0 20 0" FontSize="15"/>
+            <ComboBox Name="BinarizationAlgorithmsComboBox" SelectedIndex="{Binding SelectedBinarizationAlgorithmsIndex, Mode=TwoWay}" SelectionChanged="BinarizationAlgorithmsComboBox_SelectionChanged" Margin="20 0 0 0" FontSize="14">
+                <ComboBoxItem Content="Brak"/>
                 <ComboBoxItem Content="Ręczny algorytm binaryzacji"/>
                 <ComboBoxItem Content="Procentowa selekcja czarnego (ang. Percent Black Selection)"/>
                 <ComboBoxItem Content="Selekcja iteratywna średniej (ang. Mean Iterative Selection),"/>

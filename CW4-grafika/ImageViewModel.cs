@@ -16,6 +16,7 @@ namespace CW4_grafika
         private WriteableBitmap _currentImage;   
         private Filters _filters;
         private Histograms _histogram;
+        private BinarizationAlgorithms _binarizationAlgorithms;
         private PointTransformations _pointTransformations;
         private bool _isImageLoaded;
         private string _selectedOperation;
@@ -26,11 +27,13 @@ namespace CW4_grafika
         private float _brightnessLevel;
         private int _selectedFilterIndex;
         private int _selectedHistogramIndex;
+        private int _selectedBinarizationAlgorithmsIndex;
         private bool _isBrightnessSelected;
         private bool _isGrayScaleSelected;
         private bool _isOperationSelected;
         private bool _isFiltersSelected;
         private bool _isHistogramSelected;
+        private bool _isBinarizationAlgorithmsSelected;
         public WriteableBitmap Image
         {
             get { return _imageModel.Image; }
@@ -143,7 +146,36 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(IsHistogramSelected));
                 }
             }
+        }  
+        
+        public bool IsBinarizationAlgorithmsSelected
+        {
+            get => _isBinarizationAlgorithmsSelected;
+            set
+            {
+                if (_isBinarizationAlgorithmsSelected != value)
+                {
+                    _isBinarizationAlgorithmsSelected = value;
+                    OnPropertyChanged(nameof(IsBinarizationAlgorithmsSelected));
+                }
+            }
         }
+        public int SelectedBinarizationAlgorithmsIndex
+        {
+            get => _selectedBinarizationAlgorithmsIndex;
+            set
+            {
+                if (_selectedBinarizationAlgorithmsIndex != value)
+                {
+                    _selectedBinarizationAlgorithmsIndex = value;
+                    OnPropertyChanged(nameof(SelectedBinarizationAlgorithmsIndex));
+                    
+                    OnPropertyChanged(nameof(IsCustomBinarizationSelected));
+                    OnPropertyChanged(nameof(IsProcentBlackSelectionSelected));
+                    OnPropertyChanged(nameof(IsNiblackSelected));
+                }
+            }
+        } 
         public int SelectedFilterIndex
         {
             get => _selectedFilterIndex;
@@ -167,16 +199,13 @@ namespace CW4_grafika
                 {
                     _selectedHistogramIndex = value;
                     OnPropertyChanged(nameof(SelectedHistogramIndex));
-                    OnPropertyChanged(nameof(IsCustomBinarizationSelected));
-                    OnPropertyChanged(nameof(IsProcentBlackSelectionSelected));
-                    OnPropertyChanged(nameof(IsNiblackSelected));
                 }
             }
         }
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6;
-        public bool IsCustomBinarizationSelected => SelectedHistogramIndex == 3;
-        public bool IsProcentBlackSelectionSelected => SelectedHistogramIndex == 4;
-        public bool IsNiblackSelected => SelectedHistogramIndex == 8;
+        public bool IsCustomBinarizationSelected => SelectedBinarizationAlgorithmsIndex == 1;
+        public bool IsProcentBlackSelectionSelected => SelectedBinarizationAlgorithmsIndex == 2;
+        public bool IsNiblackSelected => SelectedBinarizationAlgorithmsIndex == 6;
         public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
         public bool CanApplyOperations => _isImageLoaded;
         public float BrightnessLevel
@@ -346,6 +375,7 @@ namespace CW4_grafika
             _imageModel = new ImageModel();
             _filters = new Filters();
             _histogram = new Histograms();
+            _binarizationAlgorithms = new BinarizationAlgorithms();
             _pointTransformations = new PointTransformations(); 
             LoadImageCommand = new RelayCommand(ExecuteLoadImage);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
@@ -467,7 +497,7 @@ namespace CW4_grafika
 
         public void ApplyStretchHistogram()
         {
-            Image = _histogram.OtsuThresholding(_originalImage);
+            Image = _histogram.StretchHistogram(_originalImage);
         }
         public void ApplyEqualizeHistogram()
         {
@@ -481,7 +511,7 @@ namespace CW4_grafika
 
          
             float threshold = BinarizationThreshold;
-            Image = _histogram.BinarizeImage(_originalImage, threshold);
+            Image = _binarizationAlgorithms.BinarizeImage(_originalImage, threshold);
         }
 
         public void ApplyPercentBlackSelection()
@@ -489,21 +519,21 @@ namespace CW4_grafika
 
             if (Image == null) return;
             double threshold = ProcentBlackThreshold;
-            Image = _histogram.PercentBlackSelection(_originalImage, threshold);
+            Image = _binarizationAlgorithms.PercentBlackSelection(_originalImage, threshold);
         }
         public void ApplyMeanIterativeSelection()
         {
-            Image = _histogram.MeanIterativeSelection(_originalImage);
+            Image = _binarizationAlgorithms.MeanIterativeSelection(_originalImage);
         }
 
         public void ApplyEntropySelection()
         {
-            Image = _histogram.EntropySelection(_originalImage);
+            Image = _binarizationAlgorithms.EntropySelection(_originalImage);
         }
 
         public void ApplyOtsuThresholding()
         {
-            Image = _histogram.OtsuThresholding(_originalImage);
+            Image = _binarizationAlgorithms.OtsuThresholding(_originalImage);
         }
 
         public void ApplyNiblackThresholding()
@@ -512,16 +542,16 @@ namespace CW4_grafika
 
             float valueD = ValueD;
             int windowSize = WindowSize;
-            Image = _histogram.NiblackThresholding(_originalImage,windowSize, valueD);
+            Image = _binarizationAlgorithms.NiblackThresholding(_originalImage,windowSize, valueD);
         }
 
         public void ApplyKapurThresholding()
         {
-            Image = _histogram.KapurThresholding(_originalImage);
+            Image = _binarizationAlgorithms.KapurThresholding(_originalImage);
         } 
         public void ApplyLuWuThresholding()
         {
-            Image = _histogram.LuWuThresholding(_originalImage);
+            Image = _binarizationAlgorithms.LuWuThresholding(_originalImage);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
