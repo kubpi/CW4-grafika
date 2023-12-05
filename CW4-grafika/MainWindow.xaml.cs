@@ -39,6 +39,7 @@ namespace CW4_grafika
                     viewModel.IsFiltersSelected = false;
                     viewModel.IsHistogramSelected = false;
                     viewModel.IsBinarizationAlgorithmsSelected = false;
+                    viewModel.IsMorphologicalFiltersSelected = false;
                 }
                 else if (radioButton.Name == "FiltersButton")
                 {
@@ -48,6 +49,7 @@ namespace CW4_grafika
                     viewModel.IsOperationSelected = false;
                     viewModel.IsHistogramSelected = false;
                     viewModel.IsBinarizationAlgorithmsSelected = false;
+                    viewModel.IsMorphologicalFiltersSelected = false;
                 }
                 else if (radioButton.Name == "HistogramsButton")
                 {
@@ -57,6 +59,7 @@ namespace CW4_grafika
                     viewModel.IsOperationSelected = false;
                     viewModel.IsHistogramSelected = true;
                     viewModel.IsBinarizationAlgorithmsSelected = false;
+                    viewModel.IsMorphologicalFiltersSelected = false;
                 }
                 else if (radioButton.Name == "BinarizationAlgorithmsButton")
                 {
@@ -66,6 +69,17 @@ namespace CW4_grafika
                     viewModel.IsOperationSelected = false;
                     viewModel.IsHistogramSelected = false;
                     viewModel.IsBinarizationAlgorithmsSelected = true;
+                    viewModel.IsMorphologicalFiltersSelected = false;
+                }
+                else if (radioButton.Name == "MorphologicalFiltersButton")
+                {
+                    viewModel.IsFiltersSelected = false;
+                    viewModel.IsGrayScaleSelected = false;
+                    viewModel.IsBrightnessSelected = false;
+                    viewModel.IsOperationSelected = false;
+                    viewModel.IsHistogramSelected = false;
+                    viewModel.IsMorphologicalFiltersSelected = true;
+                    viewModel.IsBinarizationAlgorithmsSelected = false;
                 }
                 else
                 {
@@ -73,6 +87,7 @@ namespace CW4_grafika
                     viewModel.IsFiltersSelected = false;
                     viewModel.IsHistogramSelected = false;
                     viewModel.IsBinarizationAlgorithmsSelected = false;
+                    viewModel.IsMorphologicalFiltersSelected = false;
                     if (radioButton.Name != "BrightnessButton")
                     {
                         viewModel.UpdateOperationMode(radioButton.Content.ToString());
@@ -168,6 +183,34 @@ namespace CW4_grafika
                     break;
                 case 8:
                     viewModel.ApplyLuWuThresholding();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Nieznany histogram");
+            }
+        } 
+        private void MorphologicalFiltersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = DataContext as ImageViewModel;
+            if (viewModel == null) return;
+            switch (viewModel.SelectedMorphologicalFiltersIndex)
+            {
+                case 0:
+                    viewModel.ResetToOriginalImage();
+                    break;                
+                case 1:
+                    viewModel.ApplyDilation();
+                    break;
+                case 2:
+                    viewModel.ApplyErosion();
+                    break;
+                case 3:
+                    viewModel.ApplyOpening();
+                    break;
+                case 4:
+                    viewModel.ApplyClosing();
+                    break;
+               case 5:
+                    viewModel.ApplyHitOrMiss();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Nieznany histogram");

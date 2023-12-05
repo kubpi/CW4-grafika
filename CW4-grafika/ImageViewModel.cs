@@ -16,6 +16,7 @@ namespace CW4_grafika
         private WriteableBitmap _currentImage;   
         private Filters _filters;
         private Histograms _histogram;
+        private MorphologicalFilters _morphologicalFilters;
         private BinarizationAlgorithms _binarizationAlgorithms;
         private PointTransformations _pointTransformations;
         private bool _isImageLoaded;
@@ -28,12 +29,14 @@ namespace CW4_grafika
         private int _selectedFilterIndex;
         private int _selectedHistogramIndex;
         private int _selectedBinarizationAlgorithmsIndex;
+        private int _selectedMorphologicalFiltersIndex;
         private bool _isBrightnessSelected;
         private bool _isGrayScaleSelected;
         private bool _isOperationSelected;
         private bool _isFiltersSelected;
         private bool _isHistogramSelected;
         private bool _isBinarizationAlgorithmsSelected;
+        private bool _isMorphologicalFiltersSelected;
         public WriteableBitmap Image
         {
             get { return _imageModel.Image; }
@@ -159,6 +162,18 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(IsBinarizationAlgorithmsSelected));
                 }
             }
+        }        
+        public bool IsMorphologicalFiltersSelected
+        {
+            get => _isMorphologicalFiltersSelected;
+            set
+            {
+                if (_isMorphologicalFiltersSelected != value)
+                {
+                    _isMorphologicalFiltersSelected = value;
+                    OnPropertyChanged(nameof(IsMorphologicalFiltersSelected));
+                }
+            }
         }
         public int SelectedBinarizationAlgorithmsIndex
         {
@@ -199,6 +214,18 @@ namespace CW4_grafika
                 {
                     _selectedHistogramIndex = value;
                     OnPropertyChanged(nameof(SelectedHistogramIndex));
+                }
+            }
+        } 
+        public int SelectedMorphologicalFiltersIndex
+        {
+            get => _selectedMorphologicalFiltersIndex;
+            set
+            {
+                if (_selectedMorphologicalFiltersIndex != value)
+                {
+                    _selectedMorphologicalFiltersIndex = value;
+                    OnPropertyChanged(nameof(SelectedMorphologicalFiltersIndex));
                 }
             }
         }
@@ -376,7 +403,8 @@ namespace CW4_grafika
             _filters = new Filters();
             _histogram = new Histograms();
             _binarizationAlgorithms = new BinarizationAlgorithms();
-            _pointTransformations = new PointTransformations(); 
+            _pointTransformations = new PointTransformations();
+            _morphologicalFilters = new MorphologicalFilters();
             LoadImageCommand = new RelayCommand(ExecuteLoadImage);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
         }           
@@ -552,6 +580,36 @@ namespace CW4_grafika
         public void ApplyLuWuThresholding()
         {
             Image = _binarizationAlgorithms.LuWuThresholding(_originalImage);
+        }
+
+        public void ApplyDilation()
+        {
+            Image = _morphologicalFilters.Dilation(_originalImage);
+        }
+        public void ApplyErosion()
+        {
+            Image = _morphologicalFilters.Erosion(_originalImage);
+        }
+
+        public void ApplyOpening()
+        {
+            Image = _morphologicalFilters.Opening(_originalImage);
+        }
+        public void ApplyClosing()
+        {
+            Image = _morphologicalFilters.Closing(_originalImage);
+        }
+
+        public void ApplyHitOrMiss()
+        {
+            int[,] foregroundKernel = { { 0, 1, 0 },
+                            { 1, 1, 1},
+                            { 0, 1, 0 } };
+
+            int[,] backgroundKernel = { { 1, 0, 1 },
+                            { 0, 0, 0 },
+                            { 1, 0, 1 } };
+            Image = _morphologicalFilters.HitOrMiss(_originalImage, foregroundKernel, backgroundKernel);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
