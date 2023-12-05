@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows; // For MessageBox
 
 namespace CW4_grafika
 {
@@ -132,131 +133,151 @@ namespace CW4_grafika
 
         public WriteableBitmap PercentBlackSelection(WriteableBitmap image, double blackPercent)
         {
-            // Convert indexed image to a non-indexed format if necessary
-            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            try
             {
-                // Create a non-indexed image (e.g., Bgr24)
-                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
-            }
-            int width = image.PixelWidth;
-            int height = image.PixelHeight;
-            int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-            int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
-
-            byte[] pixels = new byte[height * stride];
-            image.CopyPixels(pixels, stride, 0);
-
-            // Convert to grayscale and store in a list
-            List<byte> grayScaleValues = new List<byte>();
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
+                // Convert indexed image to a non-indexed format if necessary
+                if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
                 {
-                    int index = y * stride + x * bytesPerPixel;
-                    byte grayScaleValue = (byte)(0.3 * pixels[index + 2] + 0.59 * pixels[index + 1] + 0.11 * pixels[index]);
-                    grayScaleValues.Add(grayScaleValue);
+                    // Create a non-indexed image (e.g., Bgr24)
+                    image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
                 }
+                int width = image.PixelWidth;
+                int height = image.PixelHeight;
+                int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
+                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+
+                byte[] pixels = new byte[height * stride];
+                image.CopyPixels(pixels, stride, 0);
+
+                // Convert to grayscale and store in a list
+                List<byte> grayScaleValues = new List<byte>();
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = y * stride + x * bytesPerPixel;
+                        byte grayScaleValue = (byte)(0.3 * pixels[index + 2] + 0.59 * pixels[index + 1] + 0.11 * pixels[index]);
+                        grayScaleValues.Add(grayScaleValue);
+                    }
+                }
+
+                // Sort the grayscale values
+                grayScaleValues.Sort();
+
+                // Calculate the threshold based on the desired percentage of black
+                int thresholdIndex = (int)(blackPercent * grayScaleValues.Count / 100.0);
+                // Clamp thresholdIndex to be within the valid range
+                thresholdIndex = Math.Max(0, Math.Min(thresholdIndex, grayScaleValues.Count - 1));
+                byte threshold = grayScaleValues[thresholdIndex];
+
+
+                // Apply the threshold
+                for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+                {
+                    byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
+                    byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
+
+                    // Set R, G, and B to the binarized value
+                    pixels[i] = binarizedValue;      // Blue channel
+                    pixels[i + 1] = binarizedValue;  // Green channel
+                    pixels[i + 2] = binarizedValue;  // Red channel
+                }
+
+                WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
+                binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
+                return binarizedImage;
             }
 
-            // Sort the grayscale values
-            grayScaleValues.Sort();
-
-            // Calculate the threshold based on the desired percentage of black
-            int thresholdIndex = (int)(blackPercent * grayScaleValues.Count / 100.0);
-            byte threshold = grayScaleValues[thresholdIndex];
-
-            // Apply the threshold
-            for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+            catch (ArgumentOutOfRangeException ex)
             {
-                byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
-                byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
-
-                // Set R, G, and B to the binarized value
-                pixels[i] = binarizedValue;      // Blue channel
-                pixels[i + 1] = binarizedValue;  // Green channel
-                pixels[i + 2] = binarizedValue;  // Red channel
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
             }
-
-            WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
-            binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
-
-            return binarizedImage;
         }
 
         public WriteableBitmap MeanIterativeSelection(WriteableBitmap image)
         {
-            // Convert indexed image to a non-indexed format if necessary
-            if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+            try
             {
-                // Create a non-indexed image (e.g., Bgr24)
-                image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
-            }
-            int width = image.PixelWidth;
-            int height = image.PixelHeight;
-            int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
-            int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
+                // Convert indexed image to a non-indexed format if necessary
+                if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
+                {
+                    // Create a non-indexed image (e.g., Bgr24)
+                    image = new WriteableBitmap(new FormatConvertedBitmap(image, PixelFormats.Bgr24, null, 0));
+                }
+                int width = image.PixelWidth;
+                int height = image.PixelHeight;
+                int bytesPerPixel = (image.Format.BitsPerPixel + 7) / 8;
+                int stride = (width * bytesPerPixel + 3) & ~3; // Align to 4-byte boundary
 
-            byte[] pixels = new byte[height * stride];
-            image.CopyPixels(pixels, stride, 0);
+                byte[] pixels = new byte[height * stride];
+                image.CopyPixels(pixels, stride, 0);
 
-            // Initial threshold (you can also use a fixed value, like 128)
-            double threshold = 0;
-            for (int i = 0; i < pixels.Length; i += bytesPerPixel)
-            {
-                threshold += 0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i];
-            }
-            threshold /= (width * height);
-
-            bool thresholdChanged;
-            do
-            {
-                double meanAbove = 0, meanBelow = 0;
-                int countAbove = 0, countBelow = 0;
-
+                // Initial threshold (you can also use a fixed value, like 128)
+                double threshold = 0;
                 for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                 {
-                    double gray = 0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i];
+                    threshold += 0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i];
+                }
+                threshold /= (width * height);
 
-                    if (gray < threshold)
+                bool thresholdChanged;
+                do
+                {
+                    double meanAbove = 0, meanBelow = 0;
+                    int countAbove = 0, countBelow = 0;
+
+                    for (int i = 0; i < pixels.Length; i += bytesPerPixel)
                     {
-                        meanBelow += gray;
-                        countBelow++;
+                        double gray = 0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i];
+
+                        if (gray < threshold)
+                        {
+                            meanBelow += gray;
+                            countBelow++;
+                        }
+                        else
+                        {
+                            meanAbove += gray;
+                            countAbove++;
+                        }
                     }
-                    else
-                    {
-                        meanAbove += gray;
-                        countAbove++;
-                    }
+
+                    if (countBelow > 0) meanBelow /= countBelow;
+                    if (countAbove > 0) meanAbove /= countAbove;
+
+                    double newThreshold = (meanAbove + meanBelow) / 2;
+                    thresholdChanged = newThreshold != threshold;
+                    threshold = newThreshold;
+                } while (thresholdChanged);
+
+                // Apply the final threshold
+                for (int i = 0; i < pixels.Length; i += bytesPerPixel)
+                {
+                    byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
+                    byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
+
+                    // Set R, G, and B to the binarized value
+                    pixels[i] = binarizedValue;      // Blue channel
+                    pixels[i + 1] = binarizedValue;  // Green channel
+                    pixels[i + 2] = binarizedValue;  // Red channel
                 }
 
-                if (countBelow > 0) meanBelow /= countBelow;
-                if (countAbove > 0) meanAbove /= countAbove;
+                WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
+                binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
-                double newThreshold = (meanAbove + meanBelow) / 2;
-                thresholdChanged = newThreshold != threshold;
-                threshold = newThreshold;
-            } while (thresholdChanged);
-
-            // Apply the final threshold
-            for (int i = 0; i < pixels.Length; i += bytesPerPixel)
-            {
-                byte grayScaleValue = (byte)(0.3 * pixels[i + 2] + 0.59 * pixels[i + 1] + 0.11 * pixels[i]);
-                byte binarizedValue = grayScaleValue < threshold ? (byte)0 : (byte)255;
-
-                // Set R, G, and B to the binarized value
-                pixels[i] = binarizedValue;      // Blue channel
-                pixels[i + 1] = binarizedValue;  // Green channel
-                pixels[i + 2] = binarizedValue;  // Red channel
+                return binarizedImage;
             }
-
-            WriteableBitmap binarizedImage = new WriteableBitmap(width, height, image.DpiX, image.DpiY, image.Format, null);
-            binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
-
-            return binarizedImage;
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
         public WriteableBitmap EntropySelection(WriteableBitmap image)
         {
+            try { 
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
@@ -335,10 +356,17 @@ namespace CW4_grafika
             binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
             return binarizedImage;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
         public WriteableBitmap OtsuThresholding(WriteableBitmap image)
         {
+            try { 
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
@@ -430,10 +458,17 @@ namespace CW4_grafika
             binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
             return binarizedImage;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
-        public WriteableBitmap NiblackThresholding(WriteableBitmap image, int windowSize, double k)
+        public WriteableBitmap NiblackThresholding(WriteableBitmap image, int windowSize, float k)
         {
+            try { 
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
@@ -497,10 +532,17 @@ namespace CW4_grafika
             thresholdedImage.WritePixels(new Int32Rect(0, 0, width, height), thresholdedPixels, stride, 0);
 
             return thresholdedImage;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
         public WriteableBitmap KapurThresholding(WriteableBitmap image)
         {
+            try { 
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
@@ -585,10 +627,17 @@ namespace CW4_grafika
             binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
             return binarizedImage;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
         public WriteableBitmap LuWuThresholding(WriteableBitmap image)
         {
+            try { 
             // Convert indexed image to a non-indexed format if necessary
             if (image.Format == PixelFormats.Indexed8 || image.Format == PixelFormats.Indexed4 || image.Format == PixelFormats.Indexed1)
             {
@@ -658,6 +707,7 @@ namespace CW4_grafika
                     maxEntropy = totalEntropy;
                     optimalThreshold = t;
                 }
+
             }
 
             // Apply the optimal threshold
@@ -676,6 +726,12 @@ namespace CW4_grafika
             binarizedImage.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
 
             return binarizedImage;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // or return the original image, depending on your requirement
+            }
         }
 
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using static CW4_grafika.ImageViewModel;
+using System.Windows.Media;
 
 namespace CW4_grafika
 {
@@ -21,10 +22,10 @@ namespace CW4_grafika
                 "Divide" => ImageOperation.Divide,
                 _ => throw new ArgumentException("Nieznany tryb operacji", nameof(operationMode)),
             };
-        }
+        } 
         public WriteableBitmap RgbOperation(WriteableBitmap _originalImage, ImageOperation operation, float rValue, float gValue, float bValue)
         {
-            if (_originalImage == null) return null;
+           
 
             WriteableBitmap writableImage = _originalImage.Clone();
 
@@ -84,6 +85,7 @@ namespace CW4_grafika
         }
         public WriteableBitmap UpdateBrightness(WriteableBitmap _originalImage, WriteableBitmap Image, float _brightnessLevel)
         {
+
             if (Image == null) return null;
             // Tworzenie kopii oryginalnego obrazu do modyfikacji
             WriteableBitmap writableImage = _originalImage.Clone();

@@ -121,6 +121,14 @@
             <TextBox Name="ProcentBlackThresholdTextBox" Text="{Binding ProcentBlackThreshold , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
             <Slider Minimum="0" Maximum="100" Value="{Binding ProcentBlackThreshold, Mode=TwoWay}" Width="100" TickFrequency="5"/>
         </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="10" Grid.Row="2" Visibility="{Binding IsNiblackSelected, Converter={StaticResource BooleanToVisibilityConverter}}" Background="WhiteSmoke">
+            <TextBlock Text="Wprowadź windowsize oraz wartosc k" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBox Name="WindowSizeTextBox" Text="{Binding WindowSize , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
+            <Slider Minimum="0" Maximum="10" Value="{Binding WindowSize, Mode=TwoWay}" Width="100" TickFrequency="5"/>
+            <TextBlock Text="Wprowadź wartosc k" FontSize="15" Margin="10" HorizontalAlignment="Center"/>
+            <TextBox Name="ValueDTextBox" Text="{Binding ValueD , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Margin="10" Width="140"/>
+            <Slider Minimum="-0.5" Maximum="0.5" Value="{Binding ValueD, Mode=TwoWay}" Width="100" TickFrequency="5"/>
+        </StackPanel>
         <Grid Grid.Row="4">
             <Image Source="{Binding Image}" Visibility="{Binding IsImageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <TextBlock Text="{Binding ImagePlaceholderText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" Visibility="{Binding IsImageLoaded, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />

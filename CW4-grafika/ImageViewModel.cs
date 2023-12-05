@@ -21,6 +21,8 @@ namespace CW4_grafika
         private string _selectedOperation;
         private string _operationMode;
         private float _colorR, _colorG, _colorB, _binarizationThreshold, _procentBlackThreshold;
+        private int _windowSize;
+        private float _valueD;
         private float _brightnessLevel;
         private int _selectedFilterIndex;
         private int _selectedHistogramIndex;
@@ -167,12 +169,14 @@ namespace CW4_grafika
                     OnPropertyChanged(nameof(SelectedHistogramIndex));
                     OnPropertyChanged(nameof(IsCustomBinarizationSelected));
                     OnPropertyChanged(nameof(IsProcentBlackSelectionSelected));
+                    OnPropertyChanged(nameof(IsNiblackSelected));
                 }
             }
         }
         public bool IsConvolutionFilterSelected => SelectedFilterIndex == 6;
         public bool IsCustomBinarizationSelected => SelectedHistogramIndex == 3;
         public bool IsProcentBlackSelectionSelected => SelectedHistogramIndex == 4;
+        public bool IsNiblackSelected => SelectedHistogramIndex == 8;
         public string ImagePlaceholderText => IsImageLoaded ? string.Empty : "Wczytaj obraz, aby odblokować opcje";
         public bool CanApplyOperations => _isImageLoaded;
         public float BrightnessLevel
@@ -245,6 +249,39 @@ namespace CW4_grafika
                     if(_procentBlackThreshold != 0)
                     {
                         ApplyPercentBlackSelection(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }
+
+        public int WindowSize
+        {
+            get => _windowSize;
+            set
+            {
+                if (_windowSize != value)
+                {
+                    _windowSize = value;
+                    OnPropertyChanged(nameof(WindowSize));
+                    if (_windowSize != 0)
+                    {
+                        ApplyNiblackThresholding(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
+                    }
+                }
+            }
+        }
+        public float ValueD
+        {
+            get => _valueD;
+            set
+            {
+                if (_valueD != value)
+                {
+                    _valueD = value;
+                    OnPropertyChanged(nameof(ValueD));
+                    if (_valueD != 0)
+                    {
+                        ApplyNiblackThresholding(); // Możesz zdecydować, czy chcesz to wykonać za każdym razem
                     }
                 }
             }
@@ -396,7 +433,7 @@ namespace CW4_grafika
         {
             if (_currentImage != null)
             {
-                _originalImage = _currentImage.Clone();
+                _originalImage = Image.Clone();
             }
         }   
         public void ConvertToGrayScale(ImageOperation grayScaleType)
@@ -471,7 +508,11 @@ namespace CW4_grafika
 
         public void ApplyNiblackThresholding()
         {
-            //Image = _histogram.NiblackThresholding(_originalImage);
+            if (Image == null) return;
+
+            float valueD = ValueD;
+            int windowSize = WindowSize;
+            Image = _histogram.NiblackThresholding(_originalImage,windowSize, valueD);
         }
 
         public void ApplyKapurThresholding()
